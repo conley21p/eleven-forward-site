@@ -30,7 +30,7 @@ Use Python 3.10+ with Pillow installed and Node.js 20+ for the tests. Install th
 
 ```sh
 python3 scripts/build.py
-node --test tests/signup.test.mjs
+node --test tests/*.test.mjs
 python3 tests/check_site.py
 ```
 
@@ -60,3 +60,11 @@ Required email and initially unchecked marketing/terms consent; fixed source and
 Without JavaScript, enabled forms submit directly to Web3Forms and redirect to `/thank-you/`; the client timestamp is blank. Web3Forms handles native validation/errors beyond browser required-field checks. The current disabled fieldset also prevents native review submissions.
 
 This is inbox delivery only. The owner must establish campaign sending, unsubscribe handling, suppression, and consent record retention before sending marketing campaigns.
+
+## Product carousel and interest dialog
+
+Survival Club includes black tee, white tee, and cap concepts, with previous/next controls, arrow-key navigation, and horizontal swipe. It does not autoplay. Without JavaScript, all concepts remain visible and signup links lead to the footer form.
+
+“Stay in the loop” opens a native dialog and defaults to the displayed product. The hero CTA defaults to P001. P001 is always listed first. Product checkboxes allow multiple choices, with at least one required for an enabled submission. Opening the dialog resets product choices to the selected CTA product; it retains any email already typed. Product interests are sent as a readable comma-separated summary alongside the selected product values. Footer email signup remains independent.
+
+In review mode, the carousel and product choices work, but email/consent/submission controls remain disabled. Production activation uses the same configuration and policy prerequisites as the footer form. No real signup has been sent during automated testing.

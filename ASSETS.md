@@ -12,3 +12,9 @@ All photography, product imagery, shirt artwork, and brand direction came from t
 | Supplied pitch deck | Mission and positioning context | No financial, competitor, fundraising, or placeholder content imported. |
 
 No SOAR code, imagery, or branding was copied. The reference informed composition, spacing, and navigation simplicity.
+
+## Carousel and transparent founder revision
+
+- `originals/hat.png`: supplied cream/brown cap concept. WebP variants and JPEG fallback preserve its lettering and proportions.
+- `originals/shirt-white.png`: supplied white Survival Club tee concept, front/back. WebP variants and JPEG fallback.
+- `originals/founder-transparent.png`: owner-approved AI-upscaled transparent cutout, originally generated with the built-in image tool. This supersedes the original crop on the website. The original banner remains preserved. The generated cutout is not pixel-identical to the original face; the owner explicitly requested its use after reviewing that limitation. Optimized WebP variants and a transparent PNG fallback preserve alpha.

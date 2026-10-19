@@ -27,3 +27,9 @@ The local preview server is temporary. See README for restarting it. Screenshots
 ## Copy simplification revision
 
 Removed the redundant product-introduction section, shortened hero/founder/signup copy, reduced logo meaning to three lines, removed mission/club filler and repeated footer tagline, and renumbered sections. Reviewed updated desktop (1280px) and mobile (375px) layouts with no horizontal overflow. All ten existing signup tests and static link/consent checks passed again. Both open preview tabs were refreshed. Signup remains disabled and site unpublished.
+
+## Product carousel and modal revision
+
+The site now uses the owner-approved transparent founder image. Added three merchandise slides and a multi-select product-interest dialog (P001 first; CTA/current-slide default). Existing link/consent checks pass. Seventeen automated tests cover submission/error behavior, carousel wraparound and visibility, keyboard/swipe navigation, modal defaults, multiple choices, focus restoration, selected-product payload, and empty-selection validation. Transparent alpha and image paths checked.
+
+Browser QA for this revision was blocked by the browser tool URL security policy (protocol not allowed when selecting the existing preview tab). No workaround was attempted. Current screenshots predate this revision; desktop/mobile rendering, native dialog focus trapping/Escape, and real device swipe still require visual verification. Real Web3Forms delivery and launch remain pending the existing owner inputs.

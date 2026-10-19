@@ -6,14 +6,65 @@ menu?.addEventListener('click', () => { const open = menu.getAttribute('aria-exp
 navLinks?.addEventListener('click', event => { if (event.target.closest('a')) closeMenu(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu?.getAttribute('aria-expanded') === 'true') { closeMenu(); menu.focus(); } });
 window.matchMedia('(min-width: 641px)').addEventListener('change', closeMenu);
-const form = document.querySelector('#updates-form');
-if (form && form.dataset.enabled === 'true') {
- const status = document.querySelector('#form-status');
+const carousel = document.querySelector('.carousel');
+let currentProduct = 'shirt-black';
+if (carousel) {
+ const slides = [...carousel.querySelectorAll('.carousel-slide')];
+ const counter = carousel.querySelector('.carousel-position');
+ let index = 0;
+ function showSlide(next) {
+  index = (next + slides.length) % slides.length;
+  slides.forEach((slide, i) => { slide.hidden = i !== index; });
+  currentProduct = slides[index].dataset.product;
+  counter.textContent = `${index + 1} / ${slides.length}`;
+ }
+ carousel.querySelector('.carousel-prev').addEventListener('click', () => showSlide(index - 1));
+ carousel.querySelector('.carousel-next').addEventListener('click', () => showSlide(index + 1));
+ carousel.addEventListener('keydown', event => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); showSlide(index + (event.key === 'ArrowRight' ? 1 : -1)); }
+ });
+ let start;
+ carousel.addEventListener('touchstart', event => { start = {x:event.changedTouches[0].clientX,y:event.changedTouches[0].clientY}; }, {passive:true});
+ carousel.addEventListener('touchend', event => {
+  if (!start) return;
+  const dx = event.changedTouches[0].clientX - start.x;
+  const dy = event.changedTouches[0].clientY - start.y;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) showSlide(index + (dx < 0 ? 1 : -1));
+  start = null;
+ }, {passive:true});
+}
+const dialog = document.querySelector('#interest-dialog');
+if (dialog && typeof dialog.showModal === 'function') {
+ let opener;
+ const choices = [...dialog.querySelectorAll('[name="product_choices"]')];
+ document.querySelectorAll('[data-interest]').forEach(link => link.addEventListener('click', event => {
+  event.preventDefault(); opener = link;
+  const selected = link.dataset.interest === 'current' ? currentProduct : link.dataset.interest;
+  choices.forEach(input => { input.checked = input.value === selected; input.setCustomValidity(''); });
+  dialog.showModal(); document.documentElement.classList.add('modal-open');
+  choices.find(input => input.checked)?.focus();
+ }));
+ dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
+ dialog.addEventListener('click', event => {
+  const rect = dialog.getBoundingClientRect();
+  if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
+ });
+ dialog.addEventListener('close', () => { document.documentElement.classList.remove('modal-open'); opener?.focus(); });
+}
+for (const form of document.querySelectorAll('form[data-enabled]')) {
+ if (form.dataset.enabled !== 'true') continue;
+ const status = form.querySelector('.form-status');
  const button = form.querySelector('[type="submit"]');
+ const choices = [...form.querySelectorAll('[name="product_choices"]')];
+ function validateInterests() {
+  if (choices.length) choices[0].setCustomValidity(choices.some(input => input.checked) ? '' : 'Choose at least one product.');
+ }
+ choices.forEach(input => input.addEventListener('change', validateInterests));
  let pending = false;
  form.addEventListener('submit', async event => {
-  event.preventDefault();
+  event.preventDefault(); validateInterests();
   if (pending || !form.reportValidity()) return;
+  if (choices.length) form.elements.product_interests.value = choices.filter(input => input.checked).map(input => input.parentElement.textContent.trim()).join(', ');
   pending = true; button.disabled = true; button.textContent = 'Submitting…'; form.setAttribute('aria-busy', 'true');
   status.dataset.state = 'pending'; status.textContent = 'Sending your signup…';
   form.elements.client_submitted_at.value = new Date().toISOString();
@@ -23,7 +74,7 @@ if (form && form.dataset.enabled === 'true') {
    const result = await response.json();
    if (!response.ok || result.success !== true) throw new Error('rejected');
    status.dataset.state = 'success'; status.textContent = 'You’re on the list. Thanks for moving forward with us.';
-   form.querySelector('fieldset').disabled = true;
+   form.querySelectorAll('fieldset').forEach(fieldset => { fieldset.disabled = true; });
    button.textContent = 'Signed up';
   } catch (error) {
    status.dataset.state = 'error';

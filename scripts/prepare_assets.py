@@ -3,18 +3,19 @@ from PIL import Image
 import shutil
 ROOT=Path(__file__).resolve().parents[1]
 assets=ROOT/'dist/assets'
-sources={name:ROOT/'originals'/f'{name}.png' for name in ['product','shirt','brand','founder']}
+sources={name:ROOT/'originals'/f'{name}.png' for name in ['product','shirt','shirt-white','hat','brand','founder']}
 for name,source in sources.items():
  original=ROOT/'originals'/f'{name}.png'
  if not original.exists(): raise FileNotFoundError(f'Missing source artwork: {original}')
  if name=='brand':continue
- im=Image.open(original).convert('RGBA')
- if name=='founder':im=im.crop((605,0,im.width,im.height))
- for width in ([640,1100,1672] if name=='product' else [480,900,1192] if name=='shirt' else [382]):
+ im=Image.open(ROOT/'originals/founder-transparent.png' if name=='founder' else original).convert('RGBA')
+ if name=='founder':im=im.crop(im.getbbox())
+ for width in ([640,1100,1672] if name=='product' else [480,900,1192] if name in ['shirt','shirt-white','hat'] else [640,1000]):
   size=(min(width,im.width),round(im.height*min(width,im.width)/im.width))
   out=im.resize(size,Image.Resampling.LANCZOS)
   out.save(assets/f'{name}-{width}.webp',quality=88,method=6)
-  if width==([640,1100,1672] if name=='product' else [480,900,1192] if name=='shirt' else [382])[-1]:
+  if width==([640,1100,1672] if name=='product' else [480,900,1192] if name in ['shirt','shirt-white','hat'] else [640,1000])[-1]:
+   if name=='founder':out.save(assets/'founder-transparent.png')
    bg=Image.new('RGB',out.size,'#f5f5f0' if name!='founder' else '#101112');bg.paste(out,mask=out.getchannel('A'));bg.save(assets/f'{name}.jpg',quality=90)
 # Extract the actual supplied logo silhouette; preserve lettering and proportions.
 im=Image.open(ROOT/'originals/brand.png').convert('RGB').crop((30,184,619,289))

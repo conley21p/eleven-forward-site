@@ -6,3 +6,6 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Duplicate review copy; production source is in originals/.
+/review/founder-cutout-upscaled-review.png
