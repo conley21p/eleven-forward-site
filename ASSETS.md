@@ -26,3 +26,7 @@ The built-in image tool generated `originals/founder-right-extension.png` from t
 Prompt: extend only the right canvas to complete the missing hair/shoulder/polo outline, retain transparent background, and preserve every existing detail. Because the generation reframed the content, the site preserves the original independently and reveals only the aligned extension beyond its right edge.
 
 The extension now uses a gradual reveal behind the original portrait, beginning before the source’s transparent right margin. This fills the gap without changing the opaque original face pixels and avoids a hard clipping seam.
+
+## Responsive founder delivery
+
+The current build bakes the same aligned layers and gradient reveal into a single 1650×1152 image using Pillow. The approved foreground is composited unchanged above the extension before normal resizing/compression; no image generation or facial retouching occurs. Originals remain untouched. Deployment uses responsive opaque WebP files (480, 768, 1100, and 1650 pixels wide) on the existing #151b18 background, plus a progressive JPEG fallback. This replaces the two full-resolution PNG requests and removes obsolete portrait assets from dist. CSS retains the previous bottom-centered cover crop. Native lazy loading and async decoding avoid competing with the hero; sizes accounts for cover cropping in the fixed-height portrait panel.

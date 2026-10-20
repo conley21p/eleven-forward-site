@@ -45,11 +45,15 @@ assert re.search(r'/assets/styles\.[a-f0-9]{12}\.css',html)
 assert re.search(r'/assets/app\.[a-f0-9]{12}\.js',html)
 print('PASS: both product forms, all signup-link modal bindings, and versioned assets.')
 
-assert (ROOT/'dist/assets/founder-preserved.png').read_bytes()==(ROOT/'originals/founder-transparent.png').read_bytes()
-assert 'mask="url(#founder-new-right-edge)"'in html
-assert 'preserveAspectRatio="xMidYMax slice"'in html
-assert html.index('/assets/founder-right-extension.png')<html.index('/assets/founder-preserved.png')
-assert 'id="founder-edge-blend"'in html
+assert 'founder-preserved.png' not in html and 'founder-right-extension.png' not in html
+portrait=next(a for t,a in main.tags if t=='img' and a.get('class')=='founder-image')
+assert portrait['loading']=='lazy' and portrait['decoding']=='async'
+assert portrait['width']=='1650' and portrait['height']=='1152'
+for width in [480,768,1100,1650]:
+ asset=ROOT/f'dist/assets/founder-portrait-{width}.webp'
+ assert asset.exists() and asset.stat().st_size<250_000
+ assert f'{asset.name} {width}w' in html
+assert (ROOT/'dist/assets/founder-portrait-768.webp').stat().st_size<100_000
 assert '<figcaption>'not in html
 assert 'class="carousel-current"'in html
-print('PASS: unchanged founder foreground, blended continuation, product label in paging row.')
+print('PASS: responsive optimized founder portrait, product label in paging row.')
