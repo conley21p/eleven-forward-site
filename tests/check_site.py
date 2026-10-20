@@ -1,5 +1,6 @@
 from pathlib import Path
 from html.parser import HTMLParser
+from html import unescape
 import json,re,subprocess,sys,tempfile
 ROOT=Path(__file__).resolve().parents[1]
 class Page(HTMLParser):
@@ -64,3 +65,14 @@ assert 'id="interest-dialog"' in clubhtml and 'data-interest="current"' in clubh
 assert 'id="updates-form"' in clubhtml
 assert f'/survival-club/</loc>' in (ROOT/'dist/sitemap.xml').read_text()
 print('PASS: responsive optimized founder portrait, product label in paging row.')
+
+for file in (ROOT/'dist').rglob('*'):
+ if file.suffix in ['.html','.js','.css','.svg','.xml']:
+  assert '\u2014' not in unescape(unescape(file.read_text())),f'Em dash in deployed content: {file}'
+assert len(re.findall(r'<li><span class="number">',html))==4
+assert html.index('Better things ahead')<html.index('Always Next Step Forward')
+assert '11° / Brand concept' in html
+small=next(a for t,a in main.tags if t=='path' and 'data-mark-small' in a)
+tall=next(a for t,a in main.tags if t=='path' and 'data-mark-tall' in a)
+assert small['d']=='M0 95 19 37H66L47 95Z' and tall['d']=='M57 95 88 0H141L110 95Z'
+print('PASS: four story panels, original icon geometry and no em dashes in deployed content.')

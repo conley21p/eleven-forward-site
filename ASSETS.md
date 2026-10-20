@@ -30,3 +30,7 @@ The extension now uses a gradual reveal behind the original portrait, beginning 
 ## Responsive founder delivery
 
 The current build bakes the same aligned layers and gradient reveal into a single 1650×1152 image using Pillow. The approved foreground is composited unchanged above the extension before normal resizing/compression; no image generation or facial retouching occurs. Originals remain untouched. Deployment uses responsive opaque WebP files (480, 768, 1100, and 1650 pixels wide) on the existing #151b18 background, plus a progressive JPEG fallback. This replaces the two full-resolution PNG requests and removes obsolete portrait assets from dist. CSS retains the previous bottom-centered cover crop. Native lazy loading and async decoding avoid competing with the hero; sizes accounts for cover cropping in the fixed-height portrait panel.
+
+## Blueprint guide and journey animation
+
+The owner-supplied Geometric 11F Logo Blueprint is a styling reference only. No logo or measurements from it are published. The existing two SVG paths remain unchanged. Native SVG dashed references, arcs and leaders are anchored to those shapes and labeled “11° / Brand concept” because the retained paths do not literally measure 11° from vertical. The new direction arrow is code-drawn SVG. It appears during the shared-journey passage, while the angle guides persist, and fades before the final stepping motion.

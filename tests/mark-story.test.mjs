@@ -7,9 +7,9 @@ function setup({reduced=false,mobile=false}={}) {
  let scroll=0, callback, observer, queued=0;
  const windowEvents={}, documentEvents={}, classes=new Set();
  const node=()=>({dataset:{},style:{setProperty(k,v){this[k]=v}},attributes:{},setAttribute(k,v){this.attributes[k]=v}});
- const panels=[node(),node(),node()];
+ const panels=[node(),node(),node(),node()];
  panels.forEach((p,i)=>p.getBoundingClientRect=()=>({top:550+i*700-scroll,height:700}));
- const nodes=Object.fromEntries(['[data-mark-reveal]','[data-mark-small]','[data-mark-tall]','[data-mark-guides]','[data-mark-date]','[data-mark-angle]'].map(k=>[k,node()]));
+ const nodes=Object.fromEntries(['[data-mark-reveal]','[data-mark-small]','[data-mark-tall]','[data-mark-guides]','[data-mark-date]','[data-mark-angle]','[data-mark-direction]','[data-mark-arrow]','[data-mark-arrowhead]'].map(k=>[k,node()]));
  nodes['.mark-stage']={getBoundingClientRect:()=>({bottom:mobile?302:452})};
  const story={closest:()=>({getBoundingClientRect:()=>({top:450-scroll})}),querySelectorAll:()=>panels,querySelector:s=>nodes[s],classList:{toggle(c,on){on?classes.add(c):classes.delete(c)}}};
  const motion={matches:reduced,addEventListener(type,fn){this.change=fn}};
@@ -22,14 +22,15 @@ function setup({reduced=false,mobile=false}={}) {
 test('logo reveals, diagrams its lean, then steps to the exact resting mark',()=>{
  const s=setup();assert.equal(s.frame(0).reveal,0);assert.equal(s.frame(.7).reveal,1);
  assert.equal(s.frame(.5).date,1);assert.equal(s.frame(1.5).guides,1);assert.equal(s.frame(1.5).angle,1);
- assert.ok(s.frame(2.2).smallY < -13);assert.equal(s.frame(2.2).tallY,0);
- assert.ok(s.frame(2.6).tallY < -13);
- assert.equal(s.frame(3).reveal,1);assert.equal(s.frame(3).guides,0);
- assert.ok(Math.abs(s.frame(3).smallY)<1e-10);assert.ok(Math.abs(s.frame(3).tallY)<1e-10);
+ assert.ok(s.frame(3.25).smallY < -13);assert.equal(s.frame(3.25).tallY,0);
+ assert.ok(s.frame(3.7).tallY < -13);
+ assert.equal(s.frame(4).reveal,1);assert.equal(s.frame(4).guides,0);
+ assert.ok(Math.abs(s.frame(4).smallY)<1e-10);assert.ok(Math.abs(s.frame(4).tallY)<1e-10);
 });
 test('scroll scrubs backward and handles entry into the middle of the story',()=>{
  const s=setup();s.scrollTo(1050);assert.equal(s.nodes['[data-mark-guides]'].style.opacity,'1');assert.equal(s.panels[1].dataset.active,'true');
- s.scrollTo(2100);assert.equal(s.panels[2].dataset.active,'true');
+ s.scrollTo(1750);assert.equal(s.panels[2].dataset.active,'true');assert.equal(s.nodes['[data-mark-guides]'].style.opacity,'1');assert.equal(s.nodes['[data-mark-direction]'].style.opacity,'1');
+ s.scrollTo(2450);assert.equal(s.panels[3].dataset.active,'true');assert.equal(s.nodes['[data-mark-guides]'].style.opacity,'0');
  s.scrollTo(1050);assert.equal(s.nodes['[data-mark-guides]'].style.opacity,'1');
  s.scrollTo(-300);assert.equal(s.nodes['[data-mark-reveal]'].attributes.y,'95');
 });
@@ -57,4 +58,15 @@ test('logo arrives before copy slides in after the section fills the viewport',(
  s.scrollTo(490);assert.equal(s.panels[0].style['--mark-copy-entry'],'1');
  s.scrollTo(300);assert.equal(s.panels[0].style['--mark-copy-entry'],'0');
  s.setReduced(true);assert.equal(s.panels[0].style['--mark-copy-entry'],'1');
+});
+
+test('angle annotations persist while the journey arrow draws and fade for the final step',()=>{
+ const s=setup();
+ assert.equal(s.frame(1.5).direction,0);
+ assert.equal(s.frame(2.2).guides,1);assert.ok(s.frame(2.2).arrow>0 && s.frame(2.2).arrow<1);
+ assert.equal(s.frame(2.5).guides,1);assert.equal(s.frame(2.5).arrow,1);assert.equal(s.frame(2.5).arrowhead,1);
+ assert.equal(s.frame(2.5).smallY,0);assert.equal(s.frame(2.5).tallY,0);
+ assert.equal(s.frame(3.5).guides,0);assert.equal(s.frame(3.5).direction,0);
+ s.scrollTo(1750);assert.equal(s.nodes['[data-mark-arrow]'].style.strokeDashoffset,'0');
+ s.setReduced(true);assert.equal(s.nodes['[data-mark-direction]'].style.opacity,'0');
 });

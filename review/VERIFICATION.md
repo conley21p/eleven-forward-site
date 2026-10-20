@@ -89,3 +89,11 @@ All 27 tests pass, including five focused tests for frame stages, reverse scrubb
 ## Delayed first explanation
 
 The logo now completes its entrance as the brand section fills the viewport beneath the navigation. The first heading and paragraph remain visually hidden until that threshold, then slide upward by 24px and fade in over the next 12% of viewport-height scrolling. Reversing the scroll reverses the entrance. Reduced-motion and no-JavaScript versions retain visible static copy. Verified desktop and mobile threshold/entrance in the local browser with no overflow. All 28 tests pass, including the new threshold and reverse/reduced-motion regression check. Screenshots: mark-intro-logo-first.png and mark-intro-text-entered.png.
+
+## Blueprint guides and Better things ahead
+
+Extended the story to four scroll stages. The new third passage keeps both schematic angle annotations visible while a green arrow draws upward and right. The final stage is titled Always Next Step Forward, fades the annotations/arrow, and lifts the original two paths in sequence. Original icon path geometry is asserted unchanged. The first logo entrance and delayed paragraph threshold are preserved.
+
+Removed literal/encoded em dashes from deployed HTML, SVG, scripts and styles, including metadata, product labels and form subjects. Product colors now use parentheses; page titles use vertical bars; email subjects use colons. Historical documentation and original assets are preserved.
+
+All 29 automated tests and static checks pass. Browser reviewed at 375×812, 768×1024 and 1440×1000, with no horizontal overflow. Confirmed guides persist during Better things ahead, disappear for the final stage, and restore when scrolling backward. Corrected mobile caption spacing so the concept label stays above the scroll hint. Checked final-heading wrapping and unchanged homepage modal/P001 preselection. An isolated no-application-JavaScript copy renders all four explanations and the complete logo. Reduced-motion initial and live-toggle behavior are covered by automated tests; OS-level emulation was not available in the browser tool. Screenshots: blueprint-journey-desktop.png and blueprint-journey-mobile.png.

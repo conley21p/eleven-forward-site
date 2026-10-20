@@ -128,15 +128,18 @@ function markStoryFrame(progress) {
  const clamp = value => Math.max(0, Math.min(1, value));
  const ease = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
  const reveal = ease((progress - 0.05) / 0.55);
- const guides = ease((progress - 1) / 0.25) * (1 - ease((progress - 2) / 0.25));
+ const guides = ease((progress - 1) / 0.25) * (1 - ease((progress - 3) / 0.25));
  const step = (start) => { const t = clamp((progress - start) / 0.4); return t === 0 || t === 1 ? 0 : -14 * Math.sin(Math.PI * t); };
  return {
   reveal, guides,
   date: ease(progress / 0.2) * (1 - ease((progress - 0.8) / 0.2)),
   angle: ease((progress - 1) / 0.45),
-  smallY: progress >= 2 ? step(2) : 0,
-  tallY: progress >= 2.4 ? step(2.4) : 0,
-  active: Math.min(2, Math.max(0, Math.floor(progress)))
+  arrow: ease((progress - 2) / 0.45),
+  direction: ease((progress - 2) / 0.1) * (1 - ease((progress - 3) / 0.25)),
+  arrowhead: ease((progress - 2.35) / 0.1),
+  smallY: progress >= 3 ? step(3.05) : 0,
+  tallY: progress >= 3.5 ? step(3.5) : 0,
+  active: Math.min(3, Math.max(0, Math.floor(progress)))
  };
 }
 // Let the logo arrive before introducing the first paragraph.
@@ -159,6 +162,9 @@ if (markStory) {
  const guides = markStory.querySelector('[data-mark-guides]');
  const date = markStory.querySelector('[data-mark-date]');
  const angle = markStory.querySelector('[data-mark-angle]');
+ const direction = markStory.querySelector('[data-mark-direction]');
+ const arrow = markStory.querySelector('[data-mark-arrow]');
+ const arrowhead = markStory.querySelector('[data-mark-arrowhead]');
  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
  let frame = null;
  let visible = true;
@@ -169,7 +175,10 @@ if (markStory) {
   tall.setAttribute('transform', `translate(0 ${state.tallY})`);
   guides.style.opacity = String(state.guides);
   date.style.opacity = String(state.date);
-  angle.style.strokeDashoffset = String(1 - state.angle);
+  angle.style.opacity = String(state.angle);
+  direction.style.opacity = String(state.direction);
+  arrow.style.strokeDashoffset = String(1 - state.arrow);
+  arrowhead.style.opacity = String(state.arrowhead);
   panels[0].style.setProperty('--mark-copy-entry', String(state.copy ?? 1));
   panels.forEach((panel, i) => { panel.dataset.active = String(i === state.active); });
  }
@@ -180,7 +189,7 @@ if (markStory) {
   const mobile = window.matchMedia('(max-width: 640px)').matches;
   const stageBottom = stage.getBoundingClientRect().bottom;
   const focus = mobile ? Math.max(stageBottom + 70, window.innerHeight * 0.7) : window.innerHeight * 0.55;
-  const progress = Math.max(0, Math.min(3, (focus - first.top) / first.height));
+  const progress = Math.max(0, Math.min(4, (focus - first.top) / first.height));
   const intro = markIntroFrame(section.getBoundingClientRect().top, window.innerHeight, header?.getBoundingClientRect().bottom ?? 0);
   paint({...markStoryFrame(progress), ...intro});
  }
@@ -191,7 +200,7 @@ if (markStory) {
   if (frame !== null) { window.cancelAnimationFrame(frame); frame = null; }
   markStory.classList.toggle('mark-story-ready', !motion.matches);
   if (motion.matches) {
-   paint({...markStoryFrame(3),active:-1});
+   paint({...markStoryFrame(4),active:-1});
   } else { schedule(); }
  }
  window.addEventListener('scroll', schedule, {passive:true});

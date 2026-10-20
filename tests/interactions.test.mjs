@@ -15,7 +15,7 @@ class Element {
 }
 function setup({reduced=false,hash=''}={}){
  const ids=['p001','shirt-black','shirt-white','hat'];
- const slides=ids.slice(1).map(id=>{const e=new Element();e.dataset.product=id;e.dataset.label=id==='shirt-black'?'Survival Club Tee — Black':id==='shirt-white'?'Survival Club Tee — White':'Bad Day to Be a Colon Cap';return e;});
+ const slides=ids.slice(1).map(id=>{const e=new Element();e.dataset.product=id;e.dataset.label=id==='shirt-black'?'Survival Club Tee (Black)':id==='shirt-white'?'Survival Club Tee (White)':'Bad Day to Be a Colon Cap';return e;});
  const choices=ids.map(id=>{const e=new Element();e.value=id;return e;});
  const prev=new Element(),next=new Element(),counter=new Element(),carousel=new Element(),toggle=new Element(),productLabel=new Element();
  const dots=[new Element(),new Element(),new Element()];
@@ -56,4 +56,4 @@ test('reduced motion starts paused; dots select a slide and update modal default
 
 test('landing on #updates never opens the modal automatically; clicking signup still works',()=>{const s=setup({hash:'#updates'});assert.ok(!s.dialog.open);s.heroLink.fire('click');assert.equal(s.dialog.open,true)});
 
-test('paging-row label follows the current slide for manual and automatic changes',()=>{const s=setup();assert.equal(s.productLabel.textContent,'Survival Club Tee — Black');s.next.fire('click');assert.equal(s.productLabel.textContent,'Survival Club Tee — White');s.tick();assert.equal(s.productLabel.textContent,'Bad Day to Be a Colon Cap')});
+test('paging-row label follows the current slide for manual and automatic changes',()=>{const s=setup();assert.equal(s.productLabel.textContent,'Survival Club Tee (Black)');s.next.fire('click');assert.equal(s.productLabel.textContent,'Survival Club Tee (White)');s.tick();assert.equal(s.productLabel.textContent,'Bad Day to Be a Colon Cap')});
