@@ -51,3 +51,7 @@ Current screenshots: `carousel-styled.jpg`, `interest-modal.jpg`, `interest-moda
 ## Hero glow revision
 
 Added a green/white rotating gradient masked to the existing hero product alpha and blurred on a separate decorative layer. Verified in the local browser at 1280×1000 and 375×812: no horizontal overflow, image loads, eight-second CSS animation progresses (different sampled angles), and no solid border/frame is added. Reduced-motion rule removes the animation; print hides the glow. Static link, consent, product, and versioned-asset checks pass. Screenshots: `hero-glow-desktop.jpg` and `hero-glow-mobile.jpg`.
+
+## Hero glow removed
+
+Removed the decorative glow layer and its CSS animation at the owner’s request. Restored the original hero product markup. The historical glow screenshots describe the previous version, not the current site. Static output rebuilt and local link/product/consent checks passed.

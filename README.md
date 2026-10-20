@@ -70,7 +70,3 @@ Survival Club includes black tee, white tee, and cap concepts, with previous/nex
 In review mode, the carousel and product choices work, but email/consent/submission controls remain disabled. Production activation uses the same configuration and policy prerequisites as the footer form. No real signup has been sent during automated testing.
 
 CSS and JavaScript references include content hashes so each release loads matching assets. HTML uses a revalidation cache policy; unchanged image/font assets can still be cached.
-
-## Hero product glow
-
-An eight-second rotating green/white conic gradient is masked to the product alpha silhouette and blurred behind the photograph. It adds no solid border or rectangular frame. Mobile uses a smaller blur radius; reduced-motion preferences disable the animation while retaining a static glow.
