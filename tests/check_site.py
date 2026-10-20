@@ -55,5 +55,12 @@ for width in [480,768,1100,1650]:
  assert f'{asset.name} {width}w' in html
 assert (ROOT/'dist/assets/founder-portrait-768.webp').stat().st_size<100_000
 assert '<figcaption>'not in html
-assert 'class="carousel-current"'in html
+clubhtml=(ROOT/'dist/survival-club/index.html').read_text()
+assert 'id="survival-club"' not in html and 'class="carousel"' not in html
+assert 'href="/survival-club/"' in html
+assert '<h1 id="club-title">Survival Club.</h1>' in clubhtml
+assert 'class="carousel-current"' in clubhtml
+assert 'id="interest-dialog"' in clubhtml and 'data-interest="current"' in clubhtml
+assert 'id="updates-form"' in clubhtml
+assert f'/survival-club/</loc>' in (ROOT/'dist/sitemap.xml').read_text()
 print('PASS: responsive optimized founder portrait, product label in paging row.')

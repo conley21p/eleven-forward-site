@@ -12,6 +12,8 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory dist
 
 Use a local web server rather than opening HTML files directly: asset and route URLs begin at the website root.
 
+Survival Club lives at `/survival-club/`, linked from the shared navigation. Its carousel and product-interest modal are separate from the homepage.
+
 ## Project contents
 
 - `dist/`: ready-to-upload static output. Current output is a review build, not a public launch build.

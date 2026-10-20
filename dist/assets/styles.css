@@ -44,3 +44,7 @@
 .carousel-navigation{flex-shrink:0}.carousel-controls{margin-top:18px}
 @media(max-width:640px){.carousel-current{font-size:10px}.carousel-controls{align-items:center;gap:12px;margin-top:12px}}
 @media(max-width:480px){.carousel-selection{flex-direction:column;align-items:flex-start;gap:0}.carousel-current{padding-bottom:6px}}
+
+/* Collection page uses the same editorial title treatment as the former section. */
+.club-page .club h1{font-size:clamp(48px,6.4vw,95px);letter-spacing:-.065em;line-height:1;font-weight:400}
+@media(max-width:640px){.club-page .club h1{font-size:58px}}
