@@ -122,3 +122,77 @@ for (const form of document.querySelectorAll('form[data-enabled]')) {
   } finally { clearTimeout(timeout); pending = false; form.removeAttribute('aria-busy'); }
  });
 }
+
+// Pure scroll-to-frame mapping keeps scrubbing deterministic in either direction.
+function markStoryFrame(progress) {
+ const clamp = value => Math.max(0, Math.min(1, value));
+ const ease = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
+ const reveal = ease((progress - 0.05) / 0.55);
+ const guides = ease((progress - 1) / 0.25) * (1 - ease((progress - 2) / 0.25));
+ const step = (start) => { const t = clamp((progress - start) / 0.4); return t === 0 || t === 1 ? 0 : -14 * Math.sin(Math.PI * t); };
+ return {
+  reveal, guides,
+  date: ease(progress / 0.2) * (1 - ease((progress - 0.8) / 0.2)),
+  angle: ease((progress - 1) / 0.45),
+  smallY: progress >= 2 ? step(2) : 0,
+  tallY: progress >= 2.4 ? step(2.4) : 0,
+  active: Math.min(2, Math.max(0, Math.floor(progress)))
+ };
+}
+const markStory = document.querySelector('[data-mark-story]');
+if (markStory) {
+ const panels = [...markStory.querySelectorAll('.meaning li')];
+ const stage = markStory.querySelector('.mark-stage');
+ const reveal = markStory.querySelector('[data-mark-reveal]');
+ const small = markStory.querySelector('[data-mark-small]');
+ const tall = markStory.querySelector('[data-mark-tall]');
+ const guides = markStory.querySelector('[data-mark-guides]');
+ const date = markStory.querySelector('[data-mark-date]');
+ const angle = markStory.querySelector('[data-mark-angle]');
+ const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+ let frame = null;
+ let visible = true;
+ function paint(state) {
+  reveal.setAttribute('y', String(95 - 115 * state.reveal));
+  reveal.setAttribute('height', String(20 + 115 * state.reveal));
+  small.setAttribute('transform', `translate(0 ${state.smallY})`);
+  tall.setAttribute('transform', `translate(0 ${state.tallY})`);
+  guides.style.opacity = String(state.guides);
+  date.style.opacity = String(state.date);
+  angle.style.strokeDashoffset = String(1 - state.angle);
+  panels.forEach((panel, i) => { panel.dataset.active = String(i === state.active); });
+ }
+ function update() {
+  frame = null;
+  if (motion.matches || document.hidden || !visible) return;
+  const first = panels[0].getBoundingClientRect();
+  const mobile = window.matchMedia('(max-width: 640px)').matches;
+  const stageBottom = stage.getBoundingClientRect().bottom;
+  const focus = mobile ? Math.max(stageBottom + 70, window.innerHeight * 0.7) : window.innerHeight * 0.55;
+  const progress = Math.max(0, Math.min(3, (focus - first.top) / first.height));
+  paint(markStoryFrame(progress));
+ }
+ function schedule() {
+  if (!motion.matches && visible && !document.hidden && frame === null) frame = window.requestAnimationFrame(update);
+ }
+ function configure() {
+  if (frame !== null) { window.cancelAnimationFrame(frame); frame = null; }
+  markStory.classList.toggle('mark-story-ready', !motion.matches);
+  if (motion.matches) {
+   paint({...markStoryFrame(3),active:-1});
+  } else { schedule(); }
+ }
+ window.addEventListener('scroll', schedule, {passive:true});
+ window.addEventListener('resize', schedule);
+ document.addEventListener('visibilitychange', schedule);
+ motion.addEventListener('change', configure);
+ if ('IntersectionObserver' in window) {
+  new window.IntersectionObserver(entries => {
+   visible = entries[0].isIntersecting;
+   if (!visible && frame !== null) { window.cancelAnimationFrame(frame); frame = null; }
+   schedule();
+  }).observe(markStory);
+ }
+ if ('ResizeObserver' in window) new window.ResizeObserver(schedule).observe(markStory);
+ configure();
+}

@@ -77,3 +77,11 @@ Replaced two eager SVG PNG downloads (2,300,834 bytes total) with one responsive
 ## Separate Survival Club page
 
 Moved the collection section from the homepage to /survival-club/, with its own h1, title, description, canonical URL and sitemap entry. Updated shared navigation on every page. The collection retains its carousel, signup section and shared modal; the first collection image loads eagerly. Homepage keeps P001, mission, founder, mark and signup. Local mobile verification at 375×812 confirms no horizontal overflow, carousel navigation, modal opening and correct white-tee preselection. Modal remains closed on arrival and signup remains disabled under existing launch safeguards. Static link/route checks and all 22 interaction/submission tests pass. Screenshot: survival-club-page-mobile.png.
+
+## Scroll-animated Mark of the Survivors
+
+Implemented a three-stage native SVG story: upward reveal with 11, schematic 11° guide, and sequential lift/settle of the two forms. The final path geometry matches the existing logo, and shared logo/favicon artwork is unchanged. Scroll position drives frames in either direction; no video, library, audio or external requests were added. Static markup is complete without application JavaScript, and reduced-motion settings remove enhancement and show the final mark.
+
+Verified locally at 375×812, 768×1024 and 1440×1000: sticky-stage clearance, text readability, no horizontal overflow, resizing, reverse scrolling, and direct entry via #mark-title. The mobile stage remains below the navigation. Checked the no-application-JavaScript fallback in an isolated local copy: all three paragraphs and complete mark remain present, with no sticky enhancement. Reduced-motion initial/toggle behavior is covered by deterministic tests; OS-level reduced-motion emulation was not available in this browser tool. Confirmed the homepage signup modal still opens and preselects P001.
+
+All 27 tests pass, including five focused tests for frame stages, reverse scrubbing, batched updates, offscreen/hidden-tab inactivity, reduced motion and mobile activation. Static site checks pass. Screenshots: mark-motion-desktop.png and mark-motion-mobile.png.
