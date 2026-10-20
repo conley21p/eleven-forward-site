@@ -10,18 +10,19 @@ function setup({reduced=false,mobile=false}={}) {
  const panels=[node(),node(),node(),node()];
  panels.forEach((p,i)=>p.getBoundingClientRect=()=>({top:550+i*700-scroll,height:700}));
  const nodes=Object.fromEntries(['[data-mark-reveal]','[data-mark-small]','[data-mark-tall]','[data-mark-guides]','[data-mark-date]','[data-mark-angle]','[data-mark-direction]','[data-mark-arrow]','[data-mark-arrowhead]'].map(k=>[k,node()]));
+ const draws=Object.fromEntries(['diagonal','reference','arc'].map(group=>[group,Array.from({length:group==='arc'?2:3},node)]));
  nodes['.mark-stage']={getBoundingClientRect:()=>({bottom:mobile?302:452})};
- const story={closest:()=>({getBoundingClientRect:()=>({top:450-scroll})}),querySelectorAll:()=>panels,querySelector:s=>nodes[s],classList:{toggle(c,on){on?classes.add(c):classes.delete(c)}}};
+ const story={closest:()=>({getBoundingClientRect:()=>({top:450-scroll})}),querySelectorAll:s=>s==='.meaning li'?panels:draws[s.match(/data-mark-draw="(.*?)"/)[1]],querySelector:s=>nodes[s],classList:{toggle(c,on){on?classes.add(c):classes.delete(c)}}};
  const motion={matches:reduced,addEventListener(type,fn){this.change=fn}};
  const document={hidden:false,documentElement:{classList:{add(){}}},querySelector:s=>s==='[data-mark-story]'?story:s==='.header'?{getBoundingClientRect:()=>({bottom:80})}:null,querySelectorAll:()=>[],addEventListener:(type,fn)=>documentEvents[type]=fn};
  const window={innerHeight:1000,matchMedia:q=>q.includes('reduced')?motion:{matches:mobile,addEventListener(){}},addEventListener:(type,fn)=>windowEvents[type]=fn,requestAnimationFrame(fn){queued++;callback=fn;return queued},cancelAnimationFrame(){callback=null},IntersectionObserver:class{constructor(fn){observer=fn}observe(){}},ResizeObserver:class{observe(){}}};
  const context={document,window};vm.runInNewContext(source,context);
  const flush=()=>{const task=callback;callback=null;task?.()};
- return {nodes,panels,classes,motion,document,windowEvents,documentEvents,frame:context.markStoryFrame,intro:context.markIntroFrame,flush,queued:()=>queued,scrollTo(v){scroll=v;windowEvents.scroll();flush()},visible(v){observer([{isIntersecting:v}])},setReduced(v){motion.matches=v;motion.change();flush()}};
+ return {nodes,draws,panels,classes,motion,document,windowEvents,documentEvents,frame:context.markStoryFrame,intro:context.markIntroFrame,flush,queued:()=>queued,scrollTo(v){scroll=v;windowEvents.scroll();flush()},visible(v){observer([{isIntersecting:v}])},setReduced(v){motion.matches=v;motion.change();flush()}};
 }
 test('logo reveals, diagrams its lean, then steps to the exact resting mark',()=>{
  const s=setup();assert.equal(s.frame(0).reveal,0);assert.equal(s.frame(.7).reveal,1);
- assert.equal(s.frame(.5).date,1);assert.equal(s.frame(1.5).guides,1);assert.equal(s.frame(1.5).angle,1);
+ assert.equal(s.frame(.5).date,1);assert.equal(s.frame(1.5).guides,1);assert.equal(s.frame(1.5).angle,0);assert.equal(s.frame(2).angle,1);
  assert.ok(s.frame(3.25).smallY < -13);assert.equal(s.frame(3.25).tallY,0);
  assert.ok(s.frame(3.7).tallY < -13);
  assert.equal(s.frame(4).reveal,1);assert.equal(s.frame(4).guides,0);
@@ -69,4 +70,17 @@ test('angle annotations persist while the journey arrow draws and fade for the f
  assert.equal(s.frame(3.5).guides,0);assert.equal(s.frame(3.5).direction,0);
  s.scrollTo(1750);assert.equal(s.nodes['[data-mark-arrow]'].style.strokeDashoffset,'0');
  s.setReduced(true);assert.equal(s.nodes['[data-mark-direction]'].style.opacity,'0');
+});
+
+
+test('dotted guides draw diagonals first, references second, then arcs and labels',()=>{
+ const s=setup();
+ const diagonal=s.frame(1.2);assert.ok(diagonal.diagonal>0 && diagonal.diagonal<1);assert.equal(diagonal.reference,0);assert.equal(diagonal.arc,0);assert.equal(diagonal.angle,0);
+ const reference=s.frame(1.6);assert.equal(reference.diagonal,1);assert.ok(reference.reference>0 && reference.reference<1);assert.equal(reference.arc,0);assert.equal(reference.angle,0);
+ const arcs=s.frame(1.875);assert.equal(arcs.diagonal,1);assert.equal(arcs.reference,1);assert.equal(arcs.arc,.5);assert.equal(arcs.angle,.5);
+ const finished=s.frame(2);for(const key of ['diagonal','reference','arc','angle'])assert.equal(finished[key],1);
+ s.scrollTo(1312.5);assert.equal(s.nodes['[data-mark-angle]'].style.opacity,'0.5');assert.equal(s.draws.arc[0].style.strokeDashoffset,'0.5');
+ s.scrollTo(1400);for(const paths of Object.values(s.draws))for(const path of paths)assert.equal(path.style.strokeDashoffset,'0');
+ s.scrollTo(840);assert.equal(s.draws.reference[0].style.strokeDashoffset,'1');assert.equal(s.draws.arc[0].style.strokeDashoffset,'1');assert.equal(s.nodes['[data-mark-angle]'].style.opacity,'0');assert.ok(Number(s.draws.diagonal[0].style.strokeDashoffset)>0);
+ const held=JSON.stringify(s.draws);s.windowEvents.resize();s.flush();assert.equal(JSON.stringify(s.draws),held);
 });

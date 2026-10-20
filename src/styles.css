@@ -54,7 +54,7 @@
 .mark-stage .mark-motion-svg{position:absolute;left:50%;top:0;transform:translateX(-50%);width:min(380px,100%);max-width:100%;height:calc(100% - 30px);overflow:visible}
 .mark-guides{opacity:0;stroke:var(--carbon);stroke-width:1}
 .mark-reference{stroke:#9a9e93;stroke-dasharray:3 3}
-.mark-angle-construction{opacity:0}.mark-stem-guide{stroke:#719300;stroke-dasharray:3 3}.mark-leader{stroke:#9a9e93;stroke-width:.7}
+.mark-angle-construction{opacity:0}.mark-stem-guide{stroke:#719300;stroke-dasharray:3 3}
 .mark-angle-arc{stroke:#719300}
 .mark-angle-label{fill:var(--carbon);stroke:none;font:12px Inter,Arial,sans-serif}
 .mark-date{opacity:0;fill:var(--slate);font:10px Inter,Arial,sans-serif;letter-spacing:.12em}
@@ -95,3 +95,6 @@
 .mark-direction{opacity:0;stroke:#719300;stroke-width:1.8;stroke-linecap:square;stroke-linejoin:miter}
 [data-mark-arrow]{stroke-dasharray:1;stroke-dashoffset:1}
 [data-mark-arrowhead]{opacity:0}
+
+/* White reveal strokes animate in masks, leaving guide dots evenly spaced. */
+[data-mark-draw]{stroke-dasharray:1;stroke-dashoffset:1}

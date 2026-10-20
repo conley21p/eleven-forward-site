@@ -33,4 +33,6 @@ The current build bakes the same aligned layers and gradient reveal into a singl
 
 ## Blueprint guide and journey animation
 
-The owner-supplied Geometric 11F Logo Blueprint is a styling reference only. No logo or measurements from it are published. The existing two SVG paths remain unchanged. Native SVG dashed references, arcs and leaders are anchored to those shapes and labeled “11° / Brand concept” because the retained paths do not literally measure 11° from vertical. The new direction arrow is code-drawn SVG. It appears during the shared-journey passage, while the angle guides persist, and fades before the final stepping motion.
+The owner-supplied Geometric 11F Logo Blueprint is a styling reference only. No logo or measurements from it are published. The existing two SVG paths remain unchanged. Native SVG dashed references and arcs are anchored to those shapes and labeled “11° / Brand concept” because the retained paths do not literally measure 11° from vertical. The new direction arrow is code-drawn SVG. It appears during the shared-journey passage, while the angle guides persist, and fades before the final stepping motion.
+
+The annotated follow-up keeps the same icon paths, extends the edge-aligned diagonal guides and upper-left vertical references, and moves both angle labels/arcs above the forms. Separate SVG stroke masks reveal diagonals, vertical/horizontal references and arcs in sequence without changing the dotted pattern. The diagram uses an expanded viewBox to contain the upper labels.

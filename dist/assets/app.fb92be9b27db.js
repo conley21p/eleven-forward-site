@@ -128,12 +128,15 @@ function markStoryFrame(progress) {
  const clamp = value => Math.max(0, Math.min(1, value));
  const ease = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
  const reveal = ease((progress - 0.05) / 0.55);
- const guides = ease((progress - 1) / 0.25) * (1 - ease((progress - 3) / 0.25));
+ const guides = progress < 1 ? 0 : 1 - ease((progress - 3) / 0.25);
  const step = (start) => { const t = clamp((progress - start) / 0.4); return t === 0 || t === 1 ? 0 : -14 * Math.sin(Math.PI * t); };
  return {
   reveal, guides,
   date: ease(progress / 0.2) * (1 - ease((progress - 0.8) / 0.2)),
-  angle: ease((progress - 1) / 0.45),
+  diagonal: ease((progress - 1) / 0.4),
+  reference: ease((progress - 1.4) / 0.35),
+  arc: ease((progress - 1.75) / 0.25),
+  angle: ease((progress - 1.75) / 0.25),
   arrow: ease((progress - 2) / 0.45),
   direction: ease((progress - 2) / 0.1) * (1 - ease((progress - 3) / 0.25)),
   arrowhead: ease((progress - 2.35) / 0.1),
@@ -162,6 +165,7 @@ if (markStory) {
  const guides = markStory.querySelector('[data-mark-guides]');
  const date = markStory.querySelector('[data-mark-date]');
  const angle = markStory.querySelector('[data-mark-angle]');
+ const drawPaths = Object.fromEntries(['diagonal', 'reference', 'arc'].map(group => [group, [...markStory.querySelectorAll(`[data-mark-draw="${group}"]`)]]));
  const direction = markStory.querySelector('[data-mark-direction]');
  const arrow = markStory.querySelector('[data-mark-arrow]');
  const arrowhead = markStory.querySelector('[data-mark-arrowhead]');
@@ -176,6 +180,7 @@ if (markStory) {
   guides.style.opacity = String(state.guides);
   date.style.opacity = String(state.date);
   angle.style.opacity = String(state.angle);
+  for (const [group, paths] of Object.entries(drawPaths)) paths.forEach(path => { path.style.strokeDashoffset = String(1 - state[group]); });
   direction.style.opacity = String(state.direction);
   arrow.style.strokeDashoffset = String(1 - state.arrow);
   arrowhead.style.opacity = String(state.arrowhead);
