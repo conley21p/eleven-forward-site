@@ -139,10 +139,20 @@ function markStoryFrame(progress) {
   active: Math.min(2, Math.max(0, Math.floor(progress)))
  };
 }
+// Let the logo arrive before introducing the first paragraph.
+function markIntroFrame(sectionTop, viewportHeight, headerBottom) {
+ const ease = value => { const t = Math.max(0, Math.min(1, value)); return t * t * (3 - 2 * t); };
+ return {
+  reveal: ease((viewportHeight * 0.6 - sectionTop) / Math.max(1, viewportHeight * 0.6 - headerBottom)),
+  copy: ease((headerBottom - sectionTop) / (viewportHeight * 0.12))
+ };
+}
 const markStory = document.querySelector('[data-mark-story]');
 if (markStory) {
  const panels = [...markStory.querySelectorAll('.meaning li')];
  const stage = markStory.querySelector('.mark-stage');
+ const section = markStory.closest('.brand');
+ const header = document.querySelector('.header');
  const reveal = markStory.querySelector('[data-mark-reveal]');
  const small = markStory.querySelector('[data-mark-small]');
  const tall = markStory.querySelector('[data-mark-tall]');
@@ -160,6 +170,7 @@ if (markStory) {
   guides.style.opacity = String(state.guides);
   date.style.opacity = String(state.date);
   angle.style.strokeDashoffset = String(1 - state.angle);
+  panels[0].style.setProperty('--mark-copy-entry', String(state.copy ?? 1));
   panels.forEach((panel, i) => { panel.dataset.active = String(i === state.active); });
  }
  function update() {
@@ -170,7 +181,8 @@ if (markStory) {
   const stageBottom = stage.getBoundingClientRect().bottom;
   const focus = mobile ? Math.max(stageBottom + 70, window.innerHeight * 0.7) : window.innerHeight * 0.55;
   const progress = Math.max(0, Math.min(3, (focus - first.top) / first.height));
-  paint(markStoryFrame(progress));
+  const intro = markIntroFrame(section.getBoundingClientRect().top, window.innerHeight, header?.getBoundingClientRect().bottom ?? 0);
+  paint({...markStoryFrame(progress), ...intro});
  }
  function schedule() {
   if (!motion.matches && visible && !document.hidden && frame === null) frame = window.requestAnimationFrame(update);

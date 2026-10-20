@@ -85,3 +85,7 @@
  .mark-story-ready .meaning li{min-height:0;padding:24px 0}
  .mark-scroll-hint{display:none!important}
 }
+
+/* The first explanation enters only once the section fills the screen. */
+.mark-story-ready .meaning li:first-child>span{opacity:var(--mark-copy-entry,0);transform:translateY(calc((1 - var(--mark-copy-entry,0))*24px))}
+@media(prefers-reduced-motion:reduce),print{.mark-story-ready .meaning li:first-child>span{opacity:1;transform:none}}
