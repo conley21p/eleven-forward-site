@@ -257,6 +257,7 @@ function founderSceneFrame(top, bottom, titleTop, height) {
 const productStory = document.querySelector('[data-product-story]');
 if (productStory) {
  const moments = [...productStory.querySelectorAll('[data-product-moment]')];
+ const steps = [...productStory.querySelectorAll('[data-product-step]')];
  const pictures = ['overview','mesh','top','bottom'].map(name => productStory.querySelector(`[data-product-image="${name}"]`));
  const images = pictures.map(picture => picture.querySelector('img'));
  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -302,8 +303,13 @@ if (productStory) {
    moment.setAttribute('aria-hidden', String(i !== (state.weights[2] >= .5 ? 2 : state.weights[1] >= .5 ? 1 : 0)));
    moment.querySelector('.product-copy').style.transform = `translateY(${(1 - state.weights[i]) * 20}px)`;
   });
-  pictures[0].style.transform = `scale(${state.zoom}) translateX(${-12 * (state.zoom - 1)}%)`;
-  pictures[1].style.transform = `scale(${1.06 - 0.06 * sceneClamp(settled - 1)})`;
+  const active = state.weights[2] >= .5 ? 2 : state.weights[1] >= .5 ? 1 : 0;
+  steps.forEach((step,i) => { if(i === active) step.setAttribute('aria-current','step'); else step.removeAttribute('aria-current'); });
+  pictures[0].style.transform = '';
+  const magnify = sceneEase((settled - 1) / .35);
+  pictures[1].style.setProperty('--lens-reveal', String(magnify));
+  pictures[1].style.setProperty('--lens-scale', String(.12 + .88 * magnify));
+  pictures[1].style.setProperty('--lens-x', `${(1 - magnify) * 100}%`);
   pictures[2].style.opacity = String(1 - state.bottom);
   pictures[3].style.opacity = String(state.bottom);
   pictures[3].style.transform = `translateY(${(1 - state.bottom) * 10}px)`;
