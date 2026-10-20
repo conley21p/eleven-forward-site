@@ -59,3 +59,7 @@ Removed the decorative glow layer and its CSS animation at the owner’s request
 ## Founder extension and panel fill
 
 Added a right-side outpaint and changed the portrait viewport to fill its panel. Verified that the original foreground PNG is byte-identical to the approved existing image and that the outpaint is clipped beyond the source’s right edge. The generated face is not displayed. Inline SVG image references remain same-origin, compatible with existing image security policy. Existing local link, product-form, consent, and versioned-asset checks pass. Local browser preview failed to load (connection refused / blocked error-page protocol), so this revision’s visual crop is not browser-verified.
+
+## Disable automatic popup on entry
+
+Removed hash-triggered modal opening. Loading or refreshing the site at `#updates` leaves the modal closed. Click-triggered signup actions remain active. Added a regression test that supplies `#updates` on initialization and verifies opening occurs only after a click.

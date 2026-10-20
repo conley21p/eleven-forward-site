@@ -87,8 +87,6 @@ if (dialog && typeof dialog.showModal === 'function') {
   if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
  });
  dialog.addEventListener('close', () => { document.documentElement.classList.remove('modal-open'); opener?.focus(); resumeCarouselAfterDialog(); });
- // Signup links from policy pages land here and open the same dialog.
- if (window.location?.hash === '#updates') document.querySelector('[data-interest="p001"]')?.click();
 }
 for (const form of document.querySelectorAll('form[data-enabled]')) {
  if (form.dataset.enabled !== 'true') continue;

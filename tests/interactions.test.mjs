@@ -7,12 +7,13 @@ class Element {
  constructor(){this.attributes={};this.listeners={};this.dataset={};this.hidden=false;this.checked=false;this.focused=false;this.textContent='';}
  addEventListener(name,fn){this.listeners[name]=fn;}
  fire(name,event={}){return this.listeners[name]?.({preventDefault(){},...event});}
+ click(){this.fire('click');}
  focus(){this.focused=true;}
  setAttribute(name,value){this.attributes[name]=value;}
  contains(value){return value===this;}
  setCustomValidity(message){this.validityMessage=message;}
 }
-function setup({reduced=false}={}){
+function setup({reduced=false,hash=''}={}){
  const ids=['p001','shirt-black','shirt-white','hat'];
  const slides=ids.slice(1).map(id=>{const e=new Element();e.dataset.product=id;return e;});
  const choices=ids.map(id=>{const e=new Element();e.value=id;return e;});
@@ -27,10 +28,10 @@ function setup({reduced=false}={}){
  const merchLink=new Element(),heroLink=new Element();merchLink.dataset.interest='current';heroLink.dataset.interest='p001';
  const classes=new Set();
  const documentEvents={};
- const document={hidden:false,documentElement:{classList:{add:c=>classes.add(c),remove:c=>classes.delete(c)}},querySelector:s=>s==='.carousel'?carousel:s==='#interest-dialog'?dialog:null,querySelectorAll:s=>s==='[data-interest]'?[merchLink,heroLink]:[],addEventListener:(name,fn)=>documentEvents[name]=fn};
+ const document={hidden:false,documentElement:{classList:{add:c=>classes.add(c),remove:c=>classes.delete(c)}},querySelector:s=>s==='.carousel'?carousel:s==='#interest-dialog'?dialog:s==='[data-interest="p001"]'?heroLink:null,querySelectorAll:s=>s==='[data-interest]'?[merchLink,heroLink]:[],addEventListener:(name,fn)=>documentEvents[name]=fn};
  let timer;
  const motion={matches:reduced,addEventListener(){}};
- vm.runInNewContext(source,{document,window:{matchMedia:q=>q.includes('reduced')?motion:{addEventListener(){}}},setTimeout:(fn,ms)=>{timer={fn,ms};return 1},clearTimeout:()=>{timer=null}});
+ vm.runInNewContext(source,{document,window:{location:{hash},matchMedia:q=>q.includes('reduced')?motion:{addEventListener(){}}},setTimeout:(fn,ms)=>{timer={fn,ms};return 1},clearTimeout:()=>{timer=null}});
  return {slides,choices,prev,next,counter,carousel,dialog,close,merchLink,heroLink,classes,dots,toggle,document,documentEvents,timer:()=>timer,tick:()=>{const task=timer;timer=null;task?.fn()}};
 }
 test('carousel navigation wraps and keeps a single visible product',()=>{
@@ -52,3 +53,5 @@ test('keyboard and swipe advance products; vertical swipe does not',()=>{
 test('autoplay advances every six seconds and can be paused',()=>{const s=setup();assert.equal(s.timer().ms,6000);s.tick();assert.equal(s.counter.textContent,'02 / 03');s.toggle.fire('click');assert.equal(s.timer(),null);assert.equal(s.toggle.textContent,'Play');s.toggle.fire('click');assert.equal(s.timer().ms,6000)});
 test('autoplay pauses for hover, focus, hidden tabs and an open dialog',()=>{const s=setup();s.carousel.fire('mouseenter');assert.equal(s.timer(),null);s.carousel.fire('mouseleave');assert.ok(s.timer());s.carousel.fire('focusin');assert.equal(s.timer(),null);s.carousel.fire('focusout',{relatedTarget:null});assert.ok(s.timer());s.document.hidden=true;s.documentEvents.visibilitychange();assert.equal(s.timer(),null);s.document.hidden=false;s.documentEvents.visibilitychange();s.merchLink.fire('click');assert.equal(s.timer(),null);s.dialog.close();assert.ok(s.timer())});
 test('reduced motion starts paused; dots select a slide and update modal default',()=>{const s=setup({reduced:true});assert.equal(s.timer(),null);s.dots[2].fire('click');assert.equal(s.counter.textContent,'03 / 03');s.merchLink.fire('click');assert.deepEqual(s.choices.filter(e=>e.checked).map(e=>e.value),['hat']);assert.equal(s.dots[2].attributes['aria-pressed'],'true')});
+
+test('landing on #updates never opens the modal automatically; clicking signup still works',()=>{const s=setup({hash:'#updates'});assert.ok(!s.dialog.open);s.heroLink.fire('click');assert.equal(s.dialog.open,true)});
