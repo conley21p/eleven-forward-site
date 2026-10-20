@@ -63,8 +63,10 @@ This is inbox delivery only. The owner must establish campaign sending, unsubscr
 
 ## Product carousel and interest dialog
 
-Survival Club includes black tee, white tee, and cap concepts, with previous/next controls, arrow-key navigation, and horizontal swipe. It does not autoplay. Without JavaScript, all concepts remain visible and signup links lead to the footer form.
+Survival Club includes black tee, white tee, and cap concepts, with previous/next controls, arrow-key navigation, and horizontal swipe. It rotates every six seconds while visible, with Pause/Play and pauses on hover, focus, an open modal, or a hidden browser tab. Reduced-motion visitors start paused. Without JavaScript, all concepts remain visible and signup links lead to the footer form.
 
-“Stay in the loop” opens a native dialog and defaults to the displayed product. The hero CTA defaults to P001. P001 is always listed first. Product checkboxes allow multiple choices, with at least one required for an enabled submission. Opening the dialog resets product choices to the selected CTA product; it retains any email already typed. Product interests are sent as a readable comma-separated summary alongside the selected product values. Footer email signup remains independent.
+“Stay in the loop” opens a native dialog and defaults to the displayed product. The hero CTA defaults to P001. P001 is always listed first. Product checkboxes allow multiple choices, with at least one required for an enabled submission. Opening the dialog resets product choices to the selected CTA product; it retains any email already typed. Product interests are sent as a readable comma-separated summary alongside the selected product values. The footer form includes the same product choices and submits its own readable product-interest summary. All signup links open the modal; links from policy pages navigate home and open it there.
 
 In review mode, the carousel and product choices work, but email/consent/submission controls remain disabled. Production activation uses the same configuration and policy prerequisites as the footer form. No real signup has been sent during automated testing.
+
+CSS and JavaScript references include content hashes so each release loads matching assets. HTML uses a revalidation cache policy; unchanged image/font assets can still be cached.

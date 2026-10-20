@@ -8,30 +8,67 @@ document.addEventListener('keydown', event => { if (event.key === 'Escape' && me
 window.matchMedia('(min-width: 641px)').addEventListener('change', closeMenu);
 const carousel = document.querySelector('.carousel');
 let currentProduct = 'shirt-black';
+let pauseCarouselForDialog = () => {};
+let resumeCarouselAfterDialog = () => {};
 if (carousel) {
  const slides = [...carousel.querySelectorAll('.carousel-slide')];
+ const dots = [...carousel.querySelectorAll('.carousel-dot')];
  const counter = carousel.querySelector('.carousel-position');
+ const toggle = carousel.querySelector('.carousel-toggle');
+ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
  let index = 0;
+ let timer;
+ let userPaused = reducedMotion.matches;
+ let hovering = false;
+ let focused = false;
+ let inView = false;
+ let dialogOpen = false;
+ function schedule() {
+  clearTimeout(timer);
+  const playing = !userPaused && !hovering && !focused && inView && !dialogOpen && !document.hidden;
+  counter.setAttribute('aria-live', playing ? 'off' : 'polite');
+  toggle.textContent = userPaused ? 'Play' : 'Pause';
+  toggle.setAttribute('aria-label', userPaused ? 'Start automatic rotation' : 'Pause automatic rotation');
+  if (playing) timer = setTimeout(() => { showSlide(index + 1); schedule(); }, 6000);
+ }
  function showSlide(next) {
   index = (next + slides.length) % slides.length;
   slides.forEach((slide, i) => { slide.hidden = i !== index; });
+  dots.forEach((dot, i) => dot.setAttribute('aria-pressed', String(i === index)));
   currentProduct = slides[index].dataset.product;
-  counter.textContent = `${index + 1} / ${slides.length}`;
+  counter.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
  }
- carousel.querySelector('.carousel-prev').addEventListener('click', () => showSlide(index - 1));
- carousel.querySelector('.carousel-next').addEventListener('click', () => showSlide(index + 1));
+ function manualSlide(next) { showSlide(next); schedule(); }
+ carousel.querySelector('.carousel-prev').addEventListener('click', () => manualSlide(index - 1));
+ carousel.querySelector('.carousel-next').addEventListener('click', () => manualSlide(index + 1));
+ dots.forEach((dot, i) => dot.addEventListener('click', () => manualSlide(i)));
+ toggle.addEventListener('click', () => { userPaused = !userPaused; schedule(); });
+ carousel.addEventListener('mouseenter', () => { hovering = true; schedule(); });
+ carousel.addEventListener('mouseleave', () => { hovering = false; schedule(); });
+ carousel.addEventListener('focusin', () => { focused = true; schedule(); });
+ carousel.addEventListener('focusout', event => { focused = carousel.contains(event.relatedTarget); schedule(); });
+ document.addEventListener('visibilitychange', schedule);
+ reducedMotion.addEventListener('change', event => { userPaused = event.matches; schedule(); });
+ if ('IntersectionObserver' in window) {
+  const observer = new window.IntersectionObserver(entries => { inView = entries[0].isIntersecting; schedule(); }, {threshold:0.25});
+  observer.observe(carousel);
+ } else { inView = true; }
+ pauseCarouselForDialog = () => { dialogOpen = true; schedule(); };
+ resumeCarouselAfterDialog = () => { dialogOpen = false; schedule(); };
  carousel.addEventListener('keydown', event => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); showSlide(index + (event.key === 'ArrowRight' ? 1 : -1)); }
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); manualSlide(index + (event.key === 'ArrowRight' ? 1 : -1)); }
  });
  let start;
- carousel.addEventListener('touchstart', event => { start = {x:event.changedTouches[0].clientX,y:event.changedTouches[0].clientY}; }, {passive:true});
+ carousel.addEventListener('touchstart', event => { start = {x:event.changedTouches[0].clientX,y:event.changedTouches[0].clientY}; clearTimeout(timer); }, {passive:true});
  carousel.addEventListener('touchend', event => {
   if (!start) return;
   const dx = event.changedTouches[0].clientX - start.x;
   const dy = event.changedTouches[0].clientY - start.y;
   if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) showSlide(index + (dx < 0 ? 1 : -1));
-  start = null;
+  start = null; schedule();
  }, {passive:true});
+ carousel.addEventListener('touchcancel', () => { start = null; schedule(); });
+ showSlide(0); schedule();
 }
 const dialog = document.querySelector('#interest-dialog');
 if (dialog && typeof dialog.showModal === 'function') {
@@ -41,7 +78,7 @@ if (dialog && typeof dialog.showModal === 'function') {
   event.preventDefault(); opener = link;
   const selected = link.dataset.interest === 'current' ? currentProduct : link.dataset.interest;
   choices.forEach(input => { input.checked = input.value === selected; input.setCustomValidity(''); });
-  dialog.showModal(); document.documentElement.classList.add('modal-open');
+  pauseCarouselForDialog(); dialog.showModal(); document.documentElement.classList.add('modal-open');
   choices.find(input => input.checked)?.focus();
  }));
  dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
@@ -49,7 +86,9 @@ if (dialog && typeof dialog.showModal === 'function') {
   const rect = dialog.getBoundingClientRect();
   if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
  });
- dialog.addEventListener('close', () => { document.documentElement.classList.remove('modal-open'); opener?.focus(); });
+ dialog.addEventListener('close', () => { document.documentElement.classList.remove('modal-open'); opener?.focus(); resumeCarouselAfterDialog(); });
+ // Signup links from policy pages land here and open the same dialog.
+ if (window.location?.hash === '#updates') document.querySelector('[data-interest="p001"]')?.click();
 }
 for (const form of document.querySelectorAll('form[data-enabled]')) {
  if (form.dataset.enabled !== 'true') continue;

@@ -31,3 +31,16 @@ with tempfile.TemporaryDirectory() as temp:
  result=subprocess.run([sys.executable,str(ROOT/'scripts/build.py'),'--config',str(config),'--out',str(Path(temp)/'site')],capture_output=True,text=True)
  assert result.returncode!=0 and 'Launch blocked' in result.stderr
 print('PASS: all local links, anchors, unique IDs, review safeguards, required consent, and launch guard.')
+
+html=(ROOT/'dist/index.html').read_text()
+for form_id in ['updates-form','interest-form']:
+ match=re.search(r'<form id="'+form_id+r'".*?</form>',html,re.S)
+ parsed=Page();parsed.feed(match.group(0))
+ choices=[a['value'] for t,a in parsed.tags if t=='input' and a.get('name')=='product_choices']
+ assert choices==['p001','shirt-black','shirt-white','hat']
+ assert any(t=='input' and a.get('name')=='product_interests' for t,a in parsed.tags)
+for tag,attrs in main.tags:
+ if tag=='a' and attrs.get('href','').endswith('#updates'):assert 'data-interest'in attrs
+assert re.search(r'/assets/styles\.[a-f0-9]{12}\.css',html)
+assert re.search(r'/assets/app\.[a-f0-9]{12}\.js',html)
+print('PASS: both product forms, all signup-link modal bindings, and versioned assets.')

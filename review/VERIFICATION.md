@@ -33,3 +33,17 @@ Removed the redundant product-introduction section, shortened hero/founder/signu
 The site now uses the owner-approved transparent founder image. Added three merchandise slides and a multi-select product-interest dialog (P001 first; CTA/current-slide default). Existing link/consent checks pass. Seventeen automated tests cover submission/error behavior, carousel wraparound and visibility, keyboard/swipe navigation, modal defaults, multiple choices, focus restoration, selected-product payload, and empty-selection validation. Transparent alpha and image paths checked.
 
 Browser QA for this revision was blocked by the browser tool URL security policy (protocol not allowed when selecting the existing preview tab). No workaround was attempted. Current screenshots predate this revision; desktop/mobile rendering, native dialog focus trapping/Escape, and real device swipe still require visual verification. Real Web3Forms delivery and launch remain pending the existing owner inputs.
+
+## Carousel styling, automatic rotation, and footer-product revision
+
+Completed local browser QA using the in-app browser at 880×905 and 375×812. The earlier browser access limitation did not recur.
+
+- Confirmed styled controls load from content-versioned CSS; 10px counter, thin rules, slide indicators, arrows, Pause/Play. No horizontal overflow at either inspected width.
+- Observed six-second autoplay advance from black to white tee; confirmed manual Next navigation. Unit tests cover timer reset, Pause/Play, hover/focus/visibility/modal pauses, and reduced-motion defaults.
+- Confirmed carousel CTA selects the current product, P001 hero/nav defaults, multiple selections, Escape close, focus restoration, and mobile dialog focus containment. Mobile dialog width 337px and height 788px within a 375×812 viewport, with no horizontal overflow.
+- Both footer and modal now offer P001, black tee, white tee, and cap. Every signup link opens the modal; mobile policy-page navigation was tested through to the home-page dialog.
+- Tested enabled copies of the forms on an isolated local QA route. All submissions were intercepted locally with a fake key and local endpoint; no Web3Forms requests or emails were sent. Verified empty/malformed email and unchecked consent prevention, required product selection, multi-product success payload and confirmation, and recoverable rejection preserving email/products with retry enabled.
+- Production review configuration remains disabled. Real inbox delivery, approved policies/contact details, and production deployment verification remain pending.
+- All 20 automated interaction/submission tests and local link/consent/product/versioned-asset checks pass.
+
+Current screenshots: `carousel-styled.jpg`, `interest-modal.jpg`, `interest-modal-mobile.jpg`, and `footer-products-mobile.jpg`. Older screenshots document earlier versions.
