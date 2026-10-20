@@ -15,12 +15,12 @@ class Element {
 }
 function setup({reduced=false,hash=''}={}){
  const ids=['p001','shirt-black','shirt-white','hat'];
- const slides=ids.slice(1).map(id=>{const e=new Element();e.dataset.product=id;return e;});
+ const slides=ids.slice(1).map(id=>{const e=new Element();e.dataset.product=id;e.dataset.label=id==='shirt-black'?'Survival Club Tee — Black':id==='shirt-white'?'Survival Club Tee — White':'Bad Day to Be a Colon Cap';return e;});
  const choices=ids.map(id=>{const e=new Element();e.value=id;return e;});
- const prev=new Element(),next=new Element(),counter=new Element(),carousel=new Element(),toggle=new Element();
+ const prev=new Element(),next=new Element(),counter=new Element(),carousel=new Element(),toggle=new Element(),productLabel=new Element();
  const dots=[new Element(),new Element(),new Element()];
  carousel.querySelectorAll=s=>s==='.carousel-dot'?dots:slides;
- carousel.querySelector=s=>s==='.carousel-prev'?prev:s==='.carousel-next'?next:s==='.carousel-toggle'?toggle:counter;
+ carousel.querySelector=s=>s==='.carousel-prev'?prev:s==='.carousel-next'?next:s==='.carousel-toggle'?toggle:s==='.carousel-current'?productLabel:counter;
  const dialog=new Element(),close=new Element();
  dialog.querySelectorAll=()=>choices;dialog.querySelector=()=>close;
  dialog.showModal=()=>{dialog.open=true;};dialog.close=()=>{dialog.open=false;dialog.fire('close');};
@@ -32,7 +32,7 @@ function setup({reduced=false,hash=''}={}){
  let timer;
  const motion={matches:reduced,addEventListener(){}};
  vm.runInNewContext(source,{document,window:{location:{hash},matchMedia:q=>q.includes('reduced')?motion:{addEventListener(){}}},setTimeout:(fn,ms)=>{timer={fn,ms};return 1},clearTimeout:()=>{timer=null}});
- return {slides,choices,prev,next,counter,carousel,dialog,close,merchLink,heroLink,classes,dots,toggle,document,documentEvents,timer:()=>timer,tick:()=>{const task=timer;timer=null;task?.fn()}};
+ return {slides,choices,prev,next,counter,carousel,dialog,close,merchLink,heroLink,classes,dots,toggle,productLabel,document,documentEvents,timer:()=>timer,tick:()=>{const task=timer;timer=null;task?.fn()}};
 }
 test('carousel navigation wraps and keeps a single visible product',()=>{
  const s=setup();s.next.fire('click');assert.deepEqual(s.slides.map(e=>e.hidden),[true,false,true]);assert.equal(s.counter.textContent,'02 / 03');s.next.fire('click');s.next.fire('click');assert.deepEqual(s.slides.map(e=>e.hidden),[false,true,true]);s.prev.fire('click');assert.equal(s.counter.textContent,'03 / 03');
@@ -55,3 +55,5 @@ test('autoplay pauses for hover, focus, hidden tabs and an open dialog',()=>{con
 test('reduced motion starts paused; dots select a slide and update modal default',()=>{const s=setup({reduced:true});assert.equal(s.timer(),null);s.dots[2].fire('click');assert.equal(s.counter.textContent,'03 / 03');s.merchLink.fire('click');assert.deepEqual(s.choices.filter(e=>e.checked).map(e=>e.value),['hat']);assert.equal(s.dots[2].attributes['aria-pressed'],'true')});
 
 test('landing on #updates never opens the modal automatically; clicking signup still works',()=>{const s=setup({hash:'#updates'});assert.ok(!s.dialog.open);s.heroLink.fire('click');assert.equal(s.dialog.open,true)});
+
+test('paging-row label follows the current slide for manual and automatic changes',()=>{const s=setup();assert.equal(s.productLabel.textContent,'Survival Club Tee — Black');s.next.fire('click');assert.equal(s.productLabel.textContent,'Survival Club Tee — White');s.tick();assert.equal(s.productLabel.textContent,'Bad Day to Be a Colon Cap')});

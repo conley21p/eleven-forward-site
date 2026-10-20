@@ -14,6 +14,7 @@ if (carousel) {
  const slides = [...carousel.querySelectorAll('.carousel-slide')];
  const dots = [...carousel.querySelectorAll('.carousel-dot')];
  const counter = carousel.querySelector('.carousel-position');
+ const productLabel = carousel.querySelector('.carousel-current');
  const toggle = carousel.querySelector('.carousel-toggle');
  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
  let index = 0;
@@ -36,6 +37,7 @@ if (carousel) {
   slides.forEach((slide, i) => { slide.hidden = i !== index; });
   dots.forEach((dot, i) => dot.setAttribute('aria-pressed', String(i === index)));
   currentProduct = slides[index].dataset.product;
+  productLabel.textContent = slides[index].dataset.label;
   counter.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
  }
  function manualSlide(next) { showSlide(next); schedule(); }

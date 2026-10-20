@@ -63,3 +63,9 @@ Added a right-side outpaint and changed the portrait viewport to fill its panel.
 ## Disable automatic popup on entry
 
 Removed hash-triggered modal opening. Loading or refreshing the site at `#updates` leaves the modal closed. Click-triggered signup actions remain active. Added a regression test that supplies `#updates` on initialization and verifies opening occurs only after a click.
+
+## Annotation fixes: portrait seam and combined carousel row
+
+Replaced the hard right-edge clip with a gradient mask beginning behind the original portrait’s transparent edge. The original foreground image remains byte-identical. Local browser verification at the annotated 630×905 viewport confirms a continuous head/neck/shoulder edge.
+
+Removed the separate figure-caption row. The current product name now sits beside the left paging indicators and updates for arrow, indicator, swipe, and automatic slide changes. Narrow mobile screens stack the label within that same control group. Checked 630px and 375px widths with no horizontal overflow. All 22 interaction/submission tests and static asset/form checks pass. Screenshots: `founder-seam-fixed.jpg` and `carousel-combined-row.jpg`.

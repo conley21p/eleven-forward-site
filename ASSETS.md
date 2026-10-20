@@ -24,3 +24,5 @@ No SOAR code, imagery, or branding was copied. The reference informed compositio
 The built-in image tool generated `originals/founder-right-extension.png` from the approved transparent portrait. Its generated face is not used on the website. Inline SVG clips the extension to the missing right side and overlays `dist/assets/founder-preserved.png`, a byte-identical copy of `originals/founder-transparent.png`, at the original 1366×1152 coordinates. The generated continuation is aligned to the existing image before clipping. A cover-style SVG viewport fills the portrait panel, allowing shoulders to crop naturally at its edges.
 
 Prompt: extend only the right canvas to complete the missing hair/shoulder/polo outline, retain transparent background, and preserve every existing detail. Because the generation reframed the content, the site preserves the original independently and reveals only the aligned extension beyond its right edge.
+
+The extension now uses a gradual reveal behind the original portrait, beginning before the source’s transparent right margin. This fills the gap without changing the opaque original face pixels and avoids a hard clipping seam.
