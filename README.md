@@ -72,3 +72,9 @@ Survival Club includes black tee, white tee, and cap concepts, with previous/nex
 In review mode, the carousel and product choices work, but email/consent/submission controls remain disabled. Production activation uses the same configuration and policy prerequisites as the footer form. No real signup has been sent during automated testing.
 
 CSS and JavaScript references include content hashes so each release loads matching assets. HTML uses a revalidation cache policy; unchanged image/font assets can still be cached.
+
+## Homepage scroll scenes
+
+P001 uses a native sticky scene with full-band, mesh and elastic-band moments. Copy crossfades above the image; top and bottom elastic close-ups share the final moment. The persistent CTA opens the existing P001 interest modal. Mission and Lived Experience use shorter normal-scroll reveals. The neutral founder image has a separate CSS light behind the text, outside the face. Section 03 retains its existing four-stage logo story.
+
+All scenes share one event-driven animation-frame queue, pause offscreen/when hidden, and recalculate on viewport/image changes. Product detail transitions wait for image decoding; pending details hold the last ready frame. Reduced-motion and screens below 600px high use the stacked product layout. Without application JavaScript all copy and four product views remain visible. Asset preparation reads the new source masters in `originals/`, generates responsive website files, and leaves historical sources untouched.

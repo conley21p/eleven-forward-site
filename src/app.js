@@ -123,6 +123,38 @@ for (const form of document.querySelectorAll('form[data-enabled]')) {
  });
 }
 
+// All scroll stories share one event-driven animation-frame queue.
+let sharedScrollScenes;
+function registerScrollScene(element, update) {
+ if (!sharedScrollScenes) {
+  const scenes = new Set();
+  let pending = null;
+  const active = () => [...scenes].some(scene => scene.enabled && scene.visible);
+  const schedule = () => {
+   if (document.hidden || !active() || pending !== null) return;
+   pending = window.requestAnimationFrame(() => {
+    pending = null;
+    if (!document.hidden) scenes.forEach(scene => { if (scene.enabled && scene.visible) scene.update(); });
+   });
+  };
+  const cancelIdle = () => { if (!active() && pending !== null) { window.cancelAnimationFrame(pending); pending = null; } };
+  window.addEventListener('scroll', schedule, {passive:true});
+  window.addEventListener('resize', schedule);
+  window.addEventListener('orientationchange', schedule);
+  document.addEventListener('visibilitychange', schedule);
+  document.addEventListener('load', schedule, true);
+  sharedScrollScenes = {scenes, schedule, cancelIdle};
+ }
+ const entry = {update, visible:true, enabled:false};
+ const {scenes, schedule, cancelIdle} = sharedScrollScenes;
+ scenes.add(entry);
+ if ('IntersectionObserver' in window) new window.IntersectionObserver(entries => {
+  entry.visible = entries[0].isIntersecting; cancelIdle(); schedule();
+ }).observe(element);
+ if ('ResizeObserver' in window) new window.ResizeObserver(schedule).observe(element);
+ return {schedule, enable(value) { entry.enabled = value; cancelIdle(); schedule(); }};
+}
+
 // Pure scroll-to-frame mapping keeps scrubbing deterministic in either direction.
 function markStoryFrame(progress) {
  const clamp = value => Math.max(0, Math.min(1, value));
@@ -170,8 +202,6 @@ if (markStory) {
  const arrow = markStory.querySelector('[data-mark-arrow]');
  const arrowhead = markStory.querySelector('[data-mark-arrowhead]');
  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
- let frame = null;
- let visible = true;
  function paint(state) {
   reveal.setAttribute('y', String(95 - 115 * state.reveal));
   reveal.setAttribute('height', String(20 + 115 * state.reveal));
@@ -188,8 +218,7 @@ if (markStory) {
   panels.forEach((panel, i) => { panel.dataset.active = String(i === state.active); });
  }
  function update() {
-  frame = null;
-  if (motion.matches || document.hidden || !visible) return;
+  if (motion.matches) return;
   const first = panels[0].getBoundingClientRect();
   const mobile = window.matchMedia('(max-width: 640px)').matches;
   const stageBottom = stage.getBoundingClientRect().bottom;
@@ -198,27 +227,121 @@ if (markStory) {
   const intro = markIntroFrame(section.getBoundingClientRect().top, window.innerHeight, header?.getBoundingClientRect().bottom ?? 0);
   paint({...markStoryFrame(progress), ...intro});
  }
- function schedule() {
-  if (!motion.matches && visible && !document.hidden && frame === null) frame = window.requestAnimationFrame(update);
+ const scene = registerScrollScene(markStory, update);
+ function configure() {
+  markStory.classList.toggle('mark-story-ready', !motion.matches);
+  scene.enable(!motion.matches);
+  if (motion.matches) paint({...markStoryFrame(4),active:-1});
+ }
+ motion.addEventListener('change', configure);
+ configure();
+}
+
+
+const sceneClamp = value => Math.max(0, Math.min(1, value));
+const sceneEase = value => { const t = sceneClamp(value); return t * t * (3 - 2 * t); };
+function productStoryFrame(progress) {
+ const material = sceneEase((progress - 1) / 0.2);
+ const fit = sceneEase((progress - 2) / 0.2);
+ const bottom = sceneEase((progress - 2.5) / 0.2);
+ return {weights:[1 - material, material * (1 - fit), fit], bottom, zoom:1 + material * 0.45};
+}
+function missionSceneFrame(top, height) {
+ const progress = (height - top) / (height * 0.5);
+ return {lines:[0,0.15,0.3].map(start => sceneEase((progress - start) / 0.7)), finish:sceneEase((progress - 0.45) / 0.55)};
+}
+function founderSceneFrame(top, bottom, titleTop, height) {
+ const enter = sceneEase((height - top) / (height * 0.5));
+ return {enter, copy:sceneEase((height - titleTop) / (height * 0.45)), glow:sceneEase((height * 0.85 - titleTop) / (height * 0.35)) * sceneEase(bottom / (height * 0.5))};
+}
+const productStory = document.querySelector('[data-product-story]');
+if (productStory) {
+ const moments = [...productStory.querySelectorAll('[data-product-moment]')];
+ const pictures = ['overview','mesh','top','bottom'].map(name => productStory.querySelector(`[data-product-image="${name}"]`));
+ const images = pictures.map(picture => picture.querySelector('img'));
+ const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+ const header = document.querySelector('.header');
+ let enhanced = false, lastProgress = 0;
+ const ready = image => image.complete && image.naturalWidth > 0 && (!image.decode || image.dataset.decoded === 'true');
+ function prepare(index) {
+  const image = images[index];
+  if (image.loading === 'lazy') image.loading = 'eager';
+  if (!image.dataset.decoding) {
+   image.dataset.decoding = 'true';
+   image.decode?.().then(() => { image.dataset.decoded = 'true'; scene.schedule(); }).catch(() => {});
+  }
+ }
+ function restore() {
+  moments.forEach(moment => { moment.style.opacity = ''; moment.removeAttribute('aria-hidden'); moment.querySelector('.product-copy').style.transform = ''; });
+  pictures.forEach(picture => { picture.style.opacity = ''; picture.style.transform = ''; });
  }
  function configure() {
-  if (frame !== null) { window.cancelAnimationFrame(frame); frame = null; }
-  markStory.classList.toggle('mark-story-ready', !motion.matches);
-  if (motion.matches) {
-   paint({...markStoryFrame(4),active:-1});
-  } else { schedule(); }
+  const shouldEnhance = !motion.matches && window.innerHeight >= 600;
+  if (enhanced !== shouldEnhance) {
+   enhanced = shouldEnhance; productStory.classList.toggle('product-story-ready', enhanced);
+   if (!enhanced) restore();
+  }
+  productStory.style.setProperty('--scene-header', `${header?.getBoundingClientRect().height ?? 82}px`);
  }
- window.addEventListener('scroll', schedule, {passive:true});
- window.addEventListener('resize', schedule);
- document.addEventListener('visibilitychange', schedule);
- motion.addEventListener('change', configure);
- if ('IntersectionObserver' in window) {
-  new window.IntersectionObserver(entries => {
-   visible = entries[0].isIntersecting;
-   if (!visible && frame !== null) { window.cancelAnimationFrame(frame); frame = null; }
-   schedule();
-  }).observe(markStory);
+ function update() {
+  configure();
+  if (!enhanced) return;
+  const rect = productStory.getBoundingClientRect();
+  const travel = rect.height - productStory.querySelector('.product-sticky').getBoundingClientRect().height;
+  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / Math.max(1, travel)) * 3;
+  // Prepare the next view before its transition; hold the last ready frame on slow networks.
+  if (progress > 0.5) prepare(1);
+  if (progress > 1.5) prepare(2);
+  if (progress > 2.15) prepare(3);
+  const needed = progress > 2.5 ? 3 : progress > 2 ? 2 : progress > 1 ? 1 : 0;
+  const settled = ready(images[needed]) ? progress : lastProgress;
+  lastProgress = settled;
+  const state = productStoryFrame(settled);
+  moments.forEach((moment, i) => {
+   moment.style.opacity = String(state.weights[i]);
+   moment.setAttribute('aria-hidden', String(i !== (state.weights[2] >= .5 ? 2 : state.weights[1] >= .5 ? 1 : 0)));
+   moment.querySelector('.product-copy').style.transform = `translateY(${(1 - state.weights[i]) * 20}px)`;
+  });
+  pictures[0].style.transform = `scale(${state.zoom}) translateX(${-12 * (state.zoom - 1)}%)`;
+  pictures[1].style.transform = `scale(${1.06 - 0.06 * sceneClamp(settled - 1)})`;
+  pictures[2].style.opacity = String(1 - state.bottom);
+  pictures[3].style.opacity = String(state.bottom);
+  pictures[3].style.transform = `translateY(${(1 - state.bottom) * 10}px)`;
  }
- if ('ResizeObserver' in window) new window.ResizeObserver(schedule).observe(markStory);
- configure();
+ const scene = registerScrollScene(productStory, update);
+ motion.addEventListener('change', () => { configure(); scene.schedule(); });
+ configure(); prepare(0); scene.enable(true);
+}
+const missionScene = document.querySelector('[data-mission-scene]');
+if (missionScene) {
+ const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+ const lines = [...missionScene.querySelectorAll('.mission-line')];
+ function update() {
+  const enabled = !motion.matches && window.innerHeight >= 600;
+  missionScene.classList.toggle('mission-scene-ready', enabled);
+  if (!enabled) return;
+  const state = missionSceneFrame(missionScene.querySelector('h2').getBoundingClientRect().top, window.innerHeight);
+  lines.forEach((line,i) => { line.style.setProperty('--line-opacity', String(state.lines[i])); line.style.setProperty('--line-y', `${16 * (1 - state.lines[i])}px`); });
+  missionScene.style.setProperty('--mission-rule', String(state.finish));
+  missionScene.style.setProperty('--mission-color', [165,168,161].map((start,i) => Math.round(start + ([245,245,240][i] - start) * state.finish)).join(' '));
+ }
+ const scene = registerScrollScene(missionScene, update);
+ motion.addEventListener('change', update); scene.enable(true);
+}
+const founderScene = document.querySelector('[data-founder-scene]');
+if (founderScene) {
+ const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+ function update() {
+  const enabled = !motion.matches && window.innerHeight >= 600;
+  founderScene.classList.toggle('founder-scene-ready', enabled);
+  if (!enabled) return;
+  const rect = founderScene.getBoundingClientRect();
+  const state = founderSceneFrame(rect.top, rect.bottom, founderScene.querySelector('h2').getBoundingClientRect().top, window.innerHeight);
+  founderScene.style.setProperty('--founder-enter', String(state.enter));
+  founderScene.style.setProperty('--founder-scale', String(1.03 - state.enter * .03));
+  founderScene.style.setProperty('--founder-copy', String(state.copy));
+  founderScene.style.setProperty('--founder-glow', String(state.glow));
+ }
+ const scene = registerScrollScene(founderScene, update);
+ motion.addEventListener('change', update); scene.enable(true);
 }

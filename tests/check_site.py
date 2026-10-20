@@ -51,10 +51,10 @@ portrait=next(a for t,a in main.tags if t=='img' and a.get('class')=='founder-im
 assert portrait['loading']=='lazy' and portrait['decoding']=='async'
 assert portrait['width']=='1650' and portrait['height']=='1152'
 for width in [480,768,1100,1650]:
- asset=ROOT/f'dist/assets/founder-portrait-{width}.webp'
+ asset=ROOT/f'dist/assets/founder-neutral-{width}.webp'
  assert asset.exists() and asset.stat().st_size<250_000
  assert f'{asset.name} {width}w' in html
-assert (ROOT/'dist/assets/founder-portrait-768.webp').stat().st_size<100_000
+assert (ROOT/'dist/assets/founder-neutral-768.webp').stat().st_size<100_000
 assert '<figcaption>'not in html
 clubhtml=(ROOT/'dist/survival-club/index.html').read_text()
 assert 'id="survival-club"' not in html and 'class="carousel"' not in html
@@ -76,3 +76,17 @@ small=next(a for t,a in main.tags if t=='path' and 'data-mark-small' in a)
 tall=next(a for t,a in main.tags if t=='path' and 'data-mark-tall' in a)
 assert small['d']=='M0 95 19 37H66L47 95Z' and tall['d']=='M57 95 88 0H141L110 95Z'
 print('PASS: four story panels, original icon geometry and no em dashes in deployed content.')
+
+
+assert len([a for t,a in main.tags if 'data-product-moment' in a])==3
+assert len([a for t,a in main.tags if 'data-product-image' in a])==4
+for tag,attrs in main.tags:
+ if tag=='source' and 'srcset' in attrs:
+  candidates=[c.strip().split() for c in attrs['srcset'].split(',')]
+  descriptors=[c[1] for c in candidates]
+  assert len(descriptors)==len(set(descriptors)),f'Duplicate image candidates: {attrs}'
+  for candidate,_ in candidates:assert (ROOT/'dist'/candidate.lstrip('/')).is_file()
+assert (ROOT/'dist/assets/product-woven-640.webp').stat().st_size<250_000
+for name in ['mesh','top','bottom']:
+ assert (ROOT/f'dist/assets/product-{name}-480.webp').stat().st_size<150_000
+print('PASS: product story frames, unique responsive image candidates and mobile asset budgets.')
