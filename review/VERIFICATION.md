@@ -47,3 +47,7 @@ Completed local browser QA using the in-app browser at 880×905 and 375×812. Th
 - All 20 automated interaction/submission tests and local link/consent/product/versioned-asset checks pass.
 
 Current screenshots: `carousel-styled.jpg`, `interest-modal.jpg`, `interest-modal-mobile.jpg`, and `footer-products-mobile.jpg`. Older screenshots document earlier versions.
+
+## Hero glow revision
+
+Added a green/white rotating gradient masked to the existing hero product alpha and blurred on a separate decorative layer. Verified in the local browser at 1280×1000 and 375×812: no horizontal overflow, image loads, eight-second CSS animation progresses (different sampled angles), and no solid border/frame is added. Reduced-motion rule removes the animation; print hides the glow. Static link, consent, product, and versioned-asset checks pass. Screenshots: `hero-glow-desktop.jpg` and `hero-glow-mobile.jpg`.
