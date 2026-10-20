@@ -55,3 +55,7 @@ Added a green/white rotating gradient masked to the existing hero product alpha 
 ## Hero glow removed
 
 Removed the decorative glow layer and its CSS animation at the owner’s request. Restored the original hero product markup. The historical glow screenshots describe the previous version, not the current site. Static output rebuilt and local link/product/consent checks passed.
+
+## Founder extension and panel fill
+
+Added a right-side outpaint and changed the portrait viewport to fill its panel. Verified that the original foreground PNG is byte-identical to the approved existing image and that the outpaint is clipped beyond the source’s right edge. The generated face is not displayed. Inline SVG image references remain same-origin, compatible with existing image security policy. Existing local link, product-form, consent, and versioned-asset checks pass. Local browser preview failed to load (connection refused / blocked error-page protocol), so this revision’s visual crop is not browser-verified.

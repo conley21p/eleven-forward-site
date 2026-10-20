@@ -18,3 +18,9 @@ No SOAR code, imagery, or branding was copied. The reference informed compositio
 - `originals/hat.png`: supplied cream/brown cap concept. WebP variants and JPEG fallback preserve its lettering and proportions.
 - `originals/shirt-white.png`: supplied white Survival Club tee concept, front/back. WebP variants and JPEG fallback.
 - `originals/founder-transparent.png`: owner-approved AI-upscaled transparent cutout, originally generated with the built-in image tool. This supersedes the original crop on the website. The original banner remains preserved. The generated cutout is not pixel-identical to the original face; the owner explicitly requested its use after reviewing that limitation. Optimized WebP variants and a transparent PNG fallback preserve alpha.
+
+## Founder right-edge extension
+
+The built-in image tool generated `originals/founder-right-extension.png` from the approved transparent portrait. Its generated face is not used on the website. Inline SVG clips the extension to the missing right side and overlays `dist/assets/founder-preserved.png`, a byte-identical copy of `originals/founder-transparent.png`, at the original 1366×1152 coordinates. The generated continuation is aligned to the existing image before clipping. A cover-style SVG viewport fills the portrait panel, allowing shoulders to crop naturally at its edges.
+
+Prompt: extend only the right canvas to complete the missing hair/shoulder/polo outline, retain transparent background, and preserve every existing detail. Because the generation reframed the content, the site preserves the original independently and reveals only the aligned extension beyond its right edge.

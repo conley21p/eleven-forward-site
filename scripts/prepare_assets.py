@@ -30,3 +30,7 @@ shutil.copy2(fontdir/'OFL-Inter.txt',assets/'fonts/LICENSE.txt')
 # Product share image uses supplied artwork and brand background.
 product=Image.open(ROOT/'originals/product.png').convert('RGBA');product.thumbnail((1080,550),Image.Resampling.LANCZOS)
 share=Image.new('RGB',(1200,630),'#F5F5F0');share.paste(product,((1200-product.width)//2,(630-product.height)//2),product);share.save(assets/'social-preview.jpg',quality=90)
+
+# Keep the original portrait untouched; SVG in the page adds only the new right edge.
+shutil.copy2(ROOT/'originals/founder-transparent.png',assets/'founder-preserved.png')
+shutil.copy2(ROOT/'originals/founder-right-extension.png',assets/'founder-right-extension.png')

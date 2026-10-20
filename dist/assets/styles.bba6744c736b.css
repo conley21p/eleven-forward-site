@@ -34,3 +34,6 @@
 .signup-form .product-option{border-color:#45483f;color:#d8dcd1;background:transparent}
 .signup-form .product-option:has(input:checked){border-color:#b9c58b;background:#24291b;color:var(--chalk)}
 .signup-form .product-option input{accent-color:var(--volt)}
+
+/* Fill the portrait panel with the extended shoulder; retain the original face. */
+.founder-image{position:absolute;inset:0;display:block;width:100%;height:100%}

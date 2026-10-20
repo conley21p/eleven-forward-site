@@ -44,3 +44,9 @@ for tag,attrs in main.tags:
 assert re.search(r'/assets/styles\.[a-f0-9]{12}\.css',html)
 assert re.search(r'/assets/app\.[a-f0-9]{12}\.js',html)
 print('PASS: both product forms, all signup-link modal bindings, and versioned assets.')
+
+assert (ROOT/'dist/assets/founder-preserved.png').read_bytes()==(ROOT/'originals/founder-transparent.png').read_bytes()
+assert 'clip-path="url(#founder-new-right-edge)"'in html
+assert 'preserveAspectRatio="xMidYMax slice"'in html
+assert html.index('/assets/founder-right-extension.png')<html.index('/assets/founder-preserved.png')
+print('PASS: founder foreground is byte-identical, extension clipped behind it, panel fills by cropping.')

@@ -28,12 +28,9 @@ def write(path,content):
  target=out/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(content)
 def picture(name,widths,width,height,alt,eager=False):
  return f'''<picture><source type="image/webp" srcset="{', '.join(f'/assets/{name}-{w}.webp {min(w,width)}w' for w in widths)}" sizes="{'(max-width: 640px) 100vw, 82vw' if name=='product' else '100vw' if name in ['shirt','shirt-white','hat'] else '(max-width: 640px) 191px, 280px'}"><img src="/assets/{name}.jpg" width="{width}" height="{height}" alt="{e(alt)}" {'fetchpriority="high"' if eager else 'loading="lazy"'} decoding="async"></picture>'''
-# Founder cutout uses the upscaled transparent image approved by the owner.
-from PIL import Image
-founder=Image.open(ROOT/'dist/assets/founder-transparent.png');fw,fh=founder.size
 product=picture('product',[640,1100,1672],1672,941,'P001 sport band concept in black with a subtle Volt accent',True)
 shirt=picture('shirt',[480,900,1192],1192,774,'Front and back of the black Eleven Forward Survival Club shirt design concept')
-founderpic=picture('founder',[640,1000],fw,fh,'Manning Price, founder of Eleven Forward').replace('/assets/founder.jpg','/assets/founder-transparent.png')
+founderpic='<svg class="founder-image" viewBox="360 0 1650 1152" preserveAspectRatio="xMidYMax slice" role="img" aria-labelledby="founder-photo-title"><title id="founder-photo-title">Manning Price, founder of Eleven Forward</title><defs><clipPath id="founder-new-right-edge"><rect x="1364" y="0" width="2000" height="1152"/></clipPath></defs><image href="/assets/founder-right-extension.png" x="295.04" y="6.12" width="2046.92" height="1152" preserveAspectRatio="none" clip-path="url(#founder-new-right-edge)"/><image href="/assets/founder-preserved.png" x="0" y="0" width="1366" height="1152"/></svg>'
 products=[('p001','P001 Band'),('shirt-black','Survival Club Tee — Black'),('shirt-white','Survival Club Tee — White'),('hat','Bad Day to Be a Colon Cap')]
 merch=[('shirt-black','Survival Club Tee — Black',shirt),('shirt-white','Survival Club Tee — White',picture('shirt-white',[480,900,1192],1556,1011,'White Survival Club tee design concept, front and back')),('hat','Bad Day to Be a Colon Cap',picture('hat',[480,900,1192],1300,560,'Cream and brown cap concept reading Bad Day to Be a Colon with IBD awareness ribbon'))]
 slides=''.join(f'<figure class="carousel-slide" data-product="{pid}" aria-roledescription="slide" aria-label="{i+1} of {len(merch)}: {e(label)}" {"hidden" if i else ""}><div class="merch-image">{img}</div><figcaption>{e(label)} <span>/ Design concept</span></figcaption></figure>' for i,(pid,label,img) in enumerate(merch))
