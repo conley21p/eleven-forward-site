@@ -119,3 +119,6 @@ Selected 375px mobile hero is `product-woven-640.webp` (approximately 38 KB); de
 
 ### Product magnifier revision
 Material now grows into a circular Volt-outlined inset with a leader back to the full belt. Elastic views use the main product image at larger scale with a lower-edge mask. Three vertical steps track the active message and reverse with scrolling. Reviewed at 375 × 812 and 1440 × 1000; no desktop horizontal overflow. All 35 interaction/animation tests and static site checks pass. No new image generation or signup settings changes.
+
+### Remove P001 fit step
+Removed the third P001 moment and its progress indicator. The story now ends on the material magnifier, with scroll travel reduced to 160vh desktop / 120svh mobile. Browser inspection confirms two moments, two indicators, no fit copy, and Mission outside the product section. All 35 tests and static checks pass.

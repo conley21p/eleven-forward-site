@@ -242,9 +242,7 @@ const sceneClamp = value => Math.max(0, Math.min(1, value));
 const sceneEase = value => { const t = sceneClamp(value); return t * t * (3 - 2 * t); };
 function productStoryFrame(progress) {
  const material = sceneEase((progress - 1) / 0.2);
- const fit = sceneEase((progress - 2) / 0.2);
- const bottom = sceneEase((progress - 2.5) / 0.2);
- return {weights:[1 - material, material * (1 - fit), fit], bottom, zoom:1 + material * 0.45};
+ return {weights:[1 - material, material]};
 }
 function missionSceneFrame(top, height) {
  const progress = (height - top) / (height * 0.5);
@@ -258,7 +256,7 @@ const productStory = document.querySelector('[data-product-story]');
 if (productStory) {
  const moments = [...productStory.querySelectorAll('[data-product-moment]')];
  const steps = [...productStory.querySelectorAll('[data-product-step]')];
- const pictures = ['overview','mesh','top','bottom'].map(name => productStory.querySelector(`[data-product-image="${name}"]`));
+ const pictures = ['overview','mesh'].map(name => productStory.querySelector(`[data-product-image="${name}"]`));
  const images = pictures.map(picture => picture.querySelector('img'));
  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
  const header = document.querySelector('.header');
@@ -289,30 +287,25 @@ if (productStory) {
   if (!enhanced) return;
   const rect = productStory.getBoundingClientRect();
   const travel = rect.height - productStory.querySelector('.product-sticky').getBoundingClientRect().height;
-  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / Math.max(1, travel)) * 3;
+  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / Math.max(1, travel)) * 2;
   // Prepare the next view before its transition; hold the last ready frame on slow networks.
   if (progress > 0.5) prepare(1);
-  if (progress > 1.5) prepare(2);
-  if (progress > 2.15) prepare(3);
-  const needed = progress > 2.5 ? 3 : progress > 2 ? 2 : progress > 1 ? 1 : 0;
+  const needed = progress > 1 ? 1 : 0;
   const settled = ready(images[needed]) ? progress : lastProgress;
   lastProgress = settled;
   const state = productStoryFrame(settled);
   moments.forEach((moment, i) => {
    moment.style.opacity = String(state.weights[i]);
-   moment.setAttribute('aria-hidden', String(i !== (state.weights[2] >= .5 ? 2 : state.weights[1] >= .5 ? 1 : 0)));
+   moment.setAttribute('aria-hidden', String(i !== (state.weights[1] >= .5 ? 1 : 0)));
    moment.querySelector('.product-copy').style.transform = `translateY(${(1 - state.weights[i]) * 20}px)`;
   });
-  const active = state.weights[2] >= .5 ? 2 : state.weights[1] >= .5 ? 1 : 0;
+  const active = state.weights[1] >= .5 ? 1 : 0;
   steps.forEach((step,i) => { if(i === active) step.setAttribute('aria-current','step'); else step.removeAttribute('aria-current'); });
   pictures[0].style.transform = '';
   const magnify = sceneEase((settled - 1) / .35);
   pictures[1].style.setProperty('--lens-reveal', String(magnify));
   pictures[1].style.setProperty('--lens-scale', String(.12 + .88 * magnify));
   pictures[1].style.setProperty('--lens-x', `${(1 - magnify) * 100}%`);
-  pictures[2].style.opacity = String(1 - state.bottom);
-  pictures[3].style.opacity = String(state.bottom);
-  pictures[3].style.transform = `translateY(${(1 - state.bottom) * 10}px)`;
  }
  const scene = registerScrollScene(productStory, update);
  motion.addEventListener('change', () => { configure(); scene.schedule(); });
