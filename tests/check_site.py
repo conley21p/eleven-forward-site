@@ -64,7 +64,7 @@ assert 'carousel' not in clubhtml
 assert 'id="interest-dialog"' in clubhtml
 for pid in ['shirt-black','shirt-white','hat']:
  assert f'id="{pid}"' in clubhtml and f'data-interest="{pid}"' in clubhtml
-assert clubhtml.count('data-catalog-view')==12
+assert clubhtml.count('data-catalog-view')==10
 assert html.index('invitation-title')<html.index('id="updates"')
 assert 'data-product-story' not in html
 assert 'id="updates-form"' in clubhtml
@@ -97,10 +97,10 @@ for name in ['mesh','top','bottom']:
 print('PASS: product story frames, unique responsive image candidates and mobile asset budgets.')
 
 assets=json.loads((ROOT/'dist/assets/catalog-assets.json').read_text())
-assert len(assets)==12
+assert len(assets)==10
 for name,asset in assets.items():
- assert (ROOT/f'dist/assets/{name}-{min(asset["widths"])}.webp').stat().st_size<180_000
- assert (ROOT/f'dist/assets/{name}.jpg').exists()
+ assert (ROOT/f'dist/assets/{asset["filebase"]}-{min(asset["widths"])}.webp').stat().st_size<180_000
+ assert (ROOT/f'dist/assets/{asset["filebase"]}.png').exists()
 parsed=Page();parsed.feed(clubhtml)
 for tag,a in parsed.tags:
  if tag=='source' and 'srcset' in a:

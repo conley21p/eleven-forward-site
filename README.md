@@ -65,11 +65,11 @@ This is inbox delivery only. The owner must establish campaign sending, unsubscr
 
 ## Survival Club catalog and interest dialog
 
-The collection at `/survival-club/` has black tee, white tee and cap stories. Desktop imagery alternates right, left, right; tablet and mobile stack. Each sticky stage scrubs four views with natural reversible scrolling, using the shared frame scheduler. Progress indicators have no timers or carousel controls. New tee imagery follows the owner-supplied retail blank reference for cut and visible jersey texture, with the original artwork. All product imagery is labeled as design concepts.
+The collection at `/survival-club/` has black tee, white tee and cap stories. Desktop imagery alternates right, left, right; tablet and mobile stack. Tees have three views (front, back, graphic detail); the cap has four. Each stage uses natural reversible scrolling; the final tee moment zooms the same back-image element, using the shared frame scheduler. Progress indicators have no timers or carousel controls. New tee imagery follows the owner-supplied retail blank reference for cut and visible jersey texture, with the original artwork. All product imagery is labeled as design concepts.
 
 `Stay in the loop` opens the existing dialog with the clicked product selected. P001 stays first in the multiple-interest choices. The homepage invitation navigates directly to the collection; the static P001 hero opens its own product interest modal. No page or hash opens a modal automatically. Signup remains disabled until the existing launch requirements are complete.
 
-Catalog image transitions wait for decoding and prefetch the next view. Reduced motion, JavaScript-free browsing and screens under 600px high use normal-flow galleries. Run asset preparation before rebuilding if masters change. `scripts/prepare_catalog_assets.py` produces responsive WebP/JPEG files and a dimension manifest consumed by the builder. Generation prompts and the supplier reference are preserved in `originals/catalog/`.
+Catalog image transitions wait for decoding and prefetch the next view. Reduced motion, JavaScript-free browsing and screens under 600px high use normal-flow galleries. Run asset preparation before rebuilding if masters change. `scripts/prepare_catalog_assets.py` produces transparent responsive WebP files with PNG fallbacks and a dimension manifest consumed by the builder. Generation prompts and the supplier reference are preserved in `originals/catalog/`; transparent source masters are in its `cutouts/` directory.
 
 CSS and JavaScript references include content hashes so each release loads matching assets. HTML uses a revalidation cache policy; unchanged image/font assets can still be cached.
 

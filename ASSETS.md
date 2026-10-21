@@ -55,3 +55,13 @@ The built-in image tool generated six new tee masters (`black-front`, `black-ang
 `cap-angle.png` is a new three-quarter view of the original cap, compared for cream/brown colors, front lettering, side text and purple ribbon. Cap front/side website views are crops of untouched `originals/hat.png`. Tee detail crops use the new back master to keep the garment appearance consistent; cap embroidery detail comes from the new angle. Crop rectangles and optimization settings are recorded in `scripts/prepare_catalog_assets.py`.
 
 Masters live outside `dist/`. The public catalog has twelve responsive views, all with JPEG fallbacks and explicit dimensions. All selected mobile WebP files are below 39 KB. New angles and tee views are AI concept visualizations, not exact production photographs; unseen construction and distress textures cannot be guaranteed pixel-identical to the original artwork. No material composition or tested performance is inferred. Prompts are saved in `originals/catalog/PROMPTS.md`.
+
+## Transparent catalog cutouts and continuous tee detail zoom
+
+The built-in image tool removed backgrounds from the six retail-cut tee views, cap angle and original cap pair. Transparent masters are preserved in `originals/catalog/cutouts/`, alongside the unchanged opaque masters one directory above. The white front/back masks received a second edge-cleanup pass. Extraction prompts required genuine alpha, preserved graphics, construction, color and framing, and no replacement background or floor shadow. Generated extraction is visually compared rather than claimed pixel-identical.
+
+Responsive catalog delivery now uses `*-cutout-*.webp` with transparent PNG fallbacks. Old opaque catalog delivery files are removed during asset preparation. The cap-pair master is normalized to its original 1300 × 560 coordinate space before taking the existing front and side crops. Interior detail crops contain garment fabric, not a studio background.
+
+The final animated tee view now enlarges the same back-image element. Its source never changes during the transition; the previous replacement detail frame remains only in the static/reduced-motion gallery. The camera centers the back graphic while scaling from 1 to 2.2, and reverses with scrolling. This guarantees the animated close-up's design and texture originate from the preceding back view.
+
+The owner subsequently removed the three-quarter view from both published tee stories. Those source masters remain preserved, but are omitted from the ten-view delivery manifest. Tee stories now show front, back and a close-up that continuously zooms the back image. The cap retains four views. Mobile transparent views remain below 40 KB.

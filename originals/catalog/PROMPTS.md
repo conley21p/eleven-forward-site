@@ -29,3 +29,11 @@ Use case: product-mockup. Create one photoreal catalog image of a single white E
 ## cap-angle
 
 Use case: product-mockup. Reference the original cream/brown cap, preserving its crown, brim, seams, front oval BAD DAY / TO BE A / COLON embroidery, side IBD awareness text and purple ribbon. Create one three-quarter view showing front and side together. No model, neutral gray studio lighting and background, one complete cap with margins. No additional artwork or wording.
+
+## Transparent background extraction (all six tees, cap angle and cap pair)
+
+Use case: background-extraction. Remove ONLY the studio background and floor shadow from this exact product image, replacing them with genuine alpha transparency. Preserve every garment/cap pixel and all print lettering, logos, distressed graphics, fabric texture, colors, seams and silhouette. Do not regenerate, redraw, smooth, recolor or reposition the product. Preserve original image dimensions, framing, product scale and margins. Keep both products when there are two caps. No added shadows, glow, background, checkerboard artwork or other changes.
+
+## White front/back alpha cleanup
+
+Precise alpha-matte cleanup only. Remove isolated opaque white specks and ragged halo pixels outside the true garment silhouette. Preserve the tee interior, graphics, seams, folds, colors, frame and positioning. Use a natural antialiased garment contour and genuine transparency without detached fragments.

@@ -136,3 +136,17 @@ Removed all hero scroll choreography, pinned space, magnifier and step indicator
 - Browser reviewed 375 × 812, 768 × 1024 and 1440 × 1000, plus 720 × 500 short-screen layout (equivalent CSS viewport to 200% zoom at 1440 × 1000). Checked forward/reverse scrolling, direct product anchors, resizing and modal selections for all three products; no horizontal overflow observed. The homepage invitation's direct navigation and mobile stacked layout were reviewed.
 - A script-free served fixture verified all 12 images in normal flow with no sticky stages. Reduced-motion logic and slow decoding were verified in controlled tests; OS reduced motion, actual browser zoom and real network throttling were not toggled. No real form submission was sent; signup remains disabled.
 - Both handoff archives refreshed. Production deployment is not independently verified by this local review.
+
+### Viewport-fitting P001 hero (October 21, 2026)
+
+Reduced the hero headline and placed the supporting copy and product-update link beneath it. Desktop pairs the text column with the complete belt; tablet and mobile stack the content and allocate remaining viewport space to a contained image. The hero uses the small viewport height, subtracting the existing notice and navigation, so mobile browser controls are accounted for. Landscape phones use the compact two-column layout. Script-free mobile navigation keeps a natural scrolling fallback.
+
+Browser checks at 1728×970, 1440×800, 768×1024, 390×844, 375×667, 320×568 and 844×390 confirm the hero and caption end at the viewport bottom, with no horizontal overflow. Visually checked the full belt on desktop and mobile. The update link opens the dialog with P001 selected. All 31 existing automated tests and static checks pass. Screenshots: hero-viewport-desktop.jpg and hero-viewport-mobile.jpg. Local preview and upload bundles updated; the Cloudflare production site was not deployed from this workspace.
+
+### Transparent catalog and direct shirt-back zoom
+
+All catalog product backgrounds were removed using the built-in image tool. The delivery pipeline preserves alpha in WebP and uses transparent PNG fallback instead of JPEG, including the homepage invitation. Eight non-destructive transparent masters are retained separately, with two white-tee alpha refinements. Source and representative delivery alpha channels were verified with Pillow, and the catalog was visually reviewed on the page.
+
+The owner then removed the second (three-quarter) image from both tee stories. Each tee now has Front, Back and Graphic detail; the cap retains four views. Scroll travel is shortened to 180vh desktop / 135svh mobile for each tee. The final animated tee moment transforms the same back-image element from scale 1 to 2.2, recenters the graphic and reverses naturally. The replacement detail image is used only in static galleries. Browser inspection confirms the back source remains unchanged and visible while the separate crop stays hidden throughout the zoom.
+
+All 31 tests pass, including the new same-element zoom/reverse/static-fallback test and the existing product-selection/signup tests. Static checks cover ten published catalog views with unique responsive sources, links/anchors and launch guards. Mobile files remain below 40 KB. Desktop transparency and the final white-tee zoom were reviewed at 1440 × 1000; mobile black tee and cap cutouts were also inspected. No production signup or launch settings change.

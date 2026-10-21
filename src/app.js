@@ -217,17 +217,23 @@ if (founderScene) {
 }
 
 // Catalog views scrub with natural scroll. Static galleries are the default.
-function catalogStoryFrame(progress) {
- const p = Math.max(0, Math.min(4, progress));
- const view = Math.min(3, Math.floor(p));
+function catalogStoryFrame(progress, zoomBack = false) {
+ const count = zoomBack ? 3 : 4;
+ const p = Math.max(0, Math.min(count, progress));
+ const view = Math.min(count - 1, Math.floor(p));
  const transition = view === 0 ? 1 : sceneEase((p - view) / .2);
- const weights = [0,0,0,0];
+ const weights = Array(count).fill(0);
  weights[view] = transition;
  if (view > 0) weights[view - 1] = 1 - transition;
- return {weights, active:transition >= .5 ? view : view - 1};
+ const active = transition >= .5 ? view : view - 1;
+ const zoom = zoomBack ? sceneEase((p - 2) / .8) : 0;
+ // The last tee moment continues using the back image itself, not a replacement crop.
+ if (zoomBack && p >= 2) { weights.fill(0); weights[1] = 1; }
+ return {weights, active, visualActive:zoomBack && p >= 2 ? 1 : active, zoom};
 }
 for (const story of document.querySelectorAll('[data-catalog-story]')) {
  const stage = story.querySelector('.catalog-sticky');
+ const zoomBack = story.id === 'shirt-black' || story.id === 'shirt-white';
  const views = [...story.querySelectorAll('[data-catalog-view]')];
  const steps = [...story.querySelectorAll('[data-catalog-step]')];
  const images = views.map(view => view.querySelector('img'));
@@ -247,7 +253,11 @@ for (const story of document.querySelectorAll('[data-catalog-story]')) {
   const enhanced = !motion.matches && window.innerHeight >= 600;
   story.classList.toggle('catalog-ready', enhanced);
   story.style.setProperty('--catalog-header', `${header?.getBoundingClientRect().height ?? 82}px`);
-  if (!enhanced) views.forEach(view => { view.style.opacity = ''; view.style.transform = ''; view.removeAttribute('aria-hidden'); });
+  if (!enhanced) {
+   views.forEach(view => { view.style.opacity = ''; view.style.transform = ''; view.removeAttribute('aria-hidden'); });
+   if (zoomBack) { images[1].style.transform = ''; images[1].style.transformOrigin = ''; }
+   if (zoomBack) views[1].querySelector('figcaption').textContent = 'Back';
+  }
   return enhanced;
  }
  function update() {
@@ -256,17 +266,26 @@ for (const story of document.querySelectorAll('[data-catalog-story]')) {
   if (rect.top > window.innerHeight * 1.5 || rect.bottom < 0) return;
   prepare(0);
   const travel = Math.max(1, rect.height - stage.getBoundingClientRect().height);
-  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / travel) * 4;
+  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / travel) * views.length;
   // Prepare all intervening views on rapid scroll and the next view before it enters.
-  for (let i=1;i<=Math.min(3,Math.floor(progress + .35));i++) prepare(i);
-  const candidate = catalogStoryFrame(progress);
+  for (let i=1;i<=Math.min(zoomBack ? 1 : 3,Math.floor(progress + .35));i++) prepare(i);
+  const candidate = catalogStoryFrame(progress,zoomBack);
   if (candidate.weights.every((weight,i) => weight === 0 || decoded.has(images[i]))) settled = progress;
-  const frame = catalogStoryFrame(settled);
+  const frame = catalogStoryFrame(settled,zoomBack);
   views.forEach((view,i) => {
    view.style.opacity = String(frame.weights[i]);
    view.style.transform = `translateY(${(1 - frame.weights[i]) * 16}px)`;
-   view.setAttribute('aria-hidden', String(i !== frame.active));
+   view.setAttribute('aria-hidden', String(i !== frame.visualActive));
   });
+  if (zoomBack) {
+   const box = views[1].getBoundingClientRect();
+   const image = images[1];
+   const renderedHeight = Math.min(box.width / (image.naturalWidth || 1), box.height / (image.naturalHeight || 1)) * (image.naturalHeight || 1);
+   const center = (box.height - renderedHeight) / 2 + renderedHeight * .35;
+   image.style.transformOrigin = `50% ${center}px`;
+   image.style.transform = `translateY(${(box.height / 2 - center) * frame.zoom}px) scale(${1 + frame.zoom * 1.2})`;
+   views[1].querySelector('figcaption').textContent = frame.active === 2 ? 'Graphic detail' : 'Back';
+  }
   steps.forEach((step,i) => { if(i === frame.active) step.setAttribute('aria-current','step'); else step.removeAttribute('aria-current'); });
  }
  const scene = registerScrollScene(story,update);

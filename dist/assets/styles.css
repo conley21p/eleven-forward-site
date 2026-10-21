@@ -164,3 +164,57 @@
  .catalog-ready:nth-of-type(even) .catalog-steps li[aria-current=step]{border-color:var(--volt)}
  .catalog-ready:nth-of-type(even) .catalog-step-name{right:auto;left:100%;padding-right:0;padding-left:10px}
 }
+/* The back view itself becomes the final graphic close-up. */
+.catalog-ready .catalog-view{overflow:hidden}
+
+/* Keep the complete P001 introduction inside the initial browser viewport. */
+:root{--hero-header-height:83px;--hero-notice-height:31px}
+.hero{
+  height:calc(100svh - var(--hero-header-height) - var(--hero-notice-height));
+  min-height:430px;
+  padding:clamp(20px,4svh,44px) var(--pad) 0;
+  display:grid;
+  grid-template-columns:minmax(0,.85fr) minmax(0,1.3fr);
+  grid-template-rows:auto minmax(0,1fr) auto;
+  column-gap:clamp(20px,4vw,64px);
+  overflow:visible;
+}
+.hero>.eyebrow{grid-column:1/-1;margin-bottom:16px}
+.hero-content{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:24px;min-width:0}
+.hero h1{font-size:clamp(48px,min(5.9vw,10svh),94px);line-height:.98}
+.hero-aside{margin:0;max-width:350px}
+.hero-aside p{font-size:14px;line-height:1.6;margin-bottom:18px}
+.hero .product-stage{min-width:0;min-height:0;margin:0;padding:0;display:flex;align-items:center}
+.hero .product-stage picture{display:block;width:100%;height:100%;min-height:0}
+.hero .product-stage img{width:100%;height:100%;object-fit:contain;aspect-ratio:auto}
+.hero .image-caption{grid-column:1/-1;padding:14px 0;margin-top:14px;gap:20px}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr) auto;min-height:530px}
+  .hero-content{gap:16px}
+  .hero h1{font-size:clamp(46px,min(8vw,8svh),76px)}
+  .hero-aside{max-width:440px}
+  .hero-aside p{font-size:13px;margin-bottom:12px}
+  .hero .product-stage{margin-top:16px}
+}
+@media(max-width:640px){
+  :root{--hero-header-height:71px}
+  .hero{padding-top:20px;min-height:0}
+  .hero>.eyebrow{margin-bottom:16px}
+  .hero h1{font-size:clamp(40px,min(11.5vw,7.5svh),64px)}
+  .hero-content{gap:16px}
+  .hero .image-caption{font-size:7px;padding:12px 0;margin-top:12px}
+}
+/* Landscape phones keep text and image side by side, with room for browser chrome. */
+@media(max-height:540px) and (min-width:600px){
+  .hero{min-height:0;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:auto minmax(0,1fr) auto;padding-top:12px}
+  .hero>.eyebrow{margin-bottom:8px}
+  .hero-content{gap:12px}
+  .hero h1{font-size:clamp(32px,8svh,44px)}
+  .hero-aside p{font-size:12px;margin-bottom:8px}
+  .hero .product-stage{margin:0}
+  .hero .image-caption{padding:8px 0;margin-top:8px}
+}
+/* Expanded text and script-free navigation must remain reachable by scrolling. */
+@media(max-width:640px){html:not(.js) .hero{height:auto;min-height:0;grid-template-rows:auto auto auto auto}html:not(.js) .hero .product-stage img{height:auto}}
+.catalog-ready.catalog-tee{height:calc(100svh - var(--catalog-header,82px) + 180vh)}
+@media(max-width:640px){.catalog-ready.catalog-tee{height:calc(100svh - var(--catalog-header,71px) + 135svh)}}
