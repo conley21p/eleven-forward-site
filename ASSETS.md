@@ -45,3 +45,13 @@ The annotated follow-up keeps the same icon paths, extends the edge-aligned diag
 - Product and founder imagery have new public filenames to avoid stale cached versions. The current sharing image is `social-p001-woven.jpg`.
 
 Generation instructions constrained the P001 edit to the waistband logo and requested exact wordmark spelling, unchanged product geometry and transparency. The second branding pass requested a subtle tonal jacquard/woven appearance aligned to the elastic seams. The portrait prompt requested neutral light only, with no facial reshaping, smoothing, expression change or new styling. Generated source files were copied into `originals/`; no source remains referenced solely from the image tool’s output directory.
+
+## Survival Club catalog and retail tee reference
+
+The owner supplied `originals/catalog/retail-tee-reference.png` on October 21, 2026, confirming the ordered tee silhouette. It is a visual garment reference, not a specification of fiber composition or manufacturing dimensions. Its supplier webpage copy, pricing and pictured person are not used on the website.
+
+The built-in image tool generated six new tee masters (`black-front`, `black-angle`, `black-back`, `white-front`, `white-angle`, `white-back`) using that blank for the visible cut, crew neckline, sleeve shape, hem, smooth jersey texture and drape. Original `shirt.png` / `shirt-white.png` control the chest lettering, back graphic, print colors and placement. The earlier angle-only candidates were superseded and are not published. Faces/models are absent. The homepage invitation uses these updated front/back masters too.
+
+`cap-angle.png` is a new three-quarter view of the original cap, compared for cream/brown colors, front lettering, side text and purple ribbon. Cap front/side website views are crops of untouched `originals/hat.png`. Tee detail crops use the new back master to keep the garment appearance consistent; cap embroidery detail comes from the new angle. Crop rectangles and optimization settings are recorded in `scripts/prepare_catalog_assets.py`.
+
+Masters live outside `dist/`. The public catalog has twelve responsive views, all with JPEG fallbacks and explicit dimensions. All selected mobile WebP files are below 39 KB. New angles and tee views are AI concept visualizations, not exact production photographs; unseen construction and distress textures cannot be guaranteed pixel-identical to the original artwork. No material composition or tested performance is inferred. Prompts are saved in `originals/catalog/PROMPTS.md`.

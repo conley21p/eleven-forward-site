@@ -12,7 +12,7 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory dist
 
 Use a local web server rather than opening HTML files directly: asset and route URLs begin at the website root.
 
-Survival Club lives at `/survival-club/`, linked from the shared navigation. Its carousel and product-interest modal are separate from the homepage.
+Survival Club lives at `/survival-club/`, linked from the shared navigation. It presents three scroll-driven product stories and explicit product-interest signup buttons. A homepage invitation links to this collection.
 
 ## Project contents
 
@@ -38,7 +38,7 @@ python3 tests/check_site.py
 
 `tests/check_site.py` verifies the current disabled review build. Re-run/revise review-specific assertions deliberately when moving to production. Signup behavior tests use simulated Web3Forms responses; they do not send real emails.
 
-To regenerate optimized images, run `python3 scripts/prepare_assets.py`. It uses the preserved images and fonts in `originals/`. The generated logo is extracted from the supplied raster brand sheet, not a font substitution. Font source files and license are supplied in the output assets directory.
+To regenerate optimized images, run `python3 scripts/prepare_assets.py`, followed by `python3 scripts/prepare_catalog_assets.py`. It uses the preserved images and fonts in `originals/`. The generated logo is extracted from the supplied raster brand sheet, not a font substitution. Font source files and license are supplied in the output assets directory.
 
 ## Configure public signup
 
@@ -63,13 +63,13 @@ Without JavaScript, enabled forms submit directly to Web3Forms and redirect to `
 
 This is inbox delivery only. The owner must establish campaign sending, unsubscribe handling, suppression, and consent record retention before sending marketing campaigns.
 
-## Product carousel and interest dialog
+## Survival Club catalog and interest dialog
 
-Survival Club includes black tee, white tee, and cap concepts, with previous/next controls, arrow-key navigation, and horizontal swipe. It rotates every six seconds while visible, with Pause/Play and pauses on hover, focus, an open modal, or a hidden browser tab. Reduced-motion visitors start paused. Without JavaScript, all concepts remain visible and signup links lead to the footer form.
+The collection at `/survival-club/` has black tee, white tee and cap stories. Desktop imagery alternates right, left, right; tablet and mobile stack. Each sticky stage scrubs four views with natural reversible scrolling, using the shared frame scheduler. Progress indicators have no timers or carousel controls. New tee imagery follows the owner-supplied retail blank reference for cut and visible jersey texture, with the original artwork. All product imagery is labeled as design concepts.
 
-“Stay in the loop” opens a native dialog and defaults to the displayed product. The hero CTA defaults to P001. P001 is always listed first. Product checkboxes allow multiple choices, with at least one required for an enabled submission. Opening the dialog resets product choices to the selected CTA product; it retains any email already typed. Product interests are sent as a readable comma-separated summary alongside the selected product values. The footer form includes the same product choices and submits its own readable product-interest summary. Signup links on the home page open the modal only when clicked. Policy-page links navigate to the home-page signup section; visiting or refreshing a URL never opens the modal automatically.
+`Stay in the loop` opens the existing dialog with the clicked product selected. P001 stays first in the multiple-interest choices. The homepage invitation navigates directly to the collection; the static P001 hero opens its own product interest modal. No page or hash opens a modal automatically. Signup remains disabled until the existing launch requirements are complete.
 
-In review mode, the carousel and product choices work, but email/consent/submission controls remain disabled. Production activation uses the same configuration and policy prerequisites as the footer form. No real signup has been sent during automated testing.
+Catalog image transitions wait for decoding and prefetch the next view. Reduced motion, JavaScript-free browsing and screens under 600px high use normal-flow galleries. Run asset preparation before rebuilding if masters change. `scripts/prepare_catalog_assets.py` produces responsive WebP/JPEG files and a dimension manifest consumed by the builder. Generation prompts and the supplier reference are preserved in `originals/catalog/`.
 
 CSS and JavaScript references include content hashes so each release loads matching assets. HTML uses a revalidation cache policy; unchanged image/font assets can still be cached.
 

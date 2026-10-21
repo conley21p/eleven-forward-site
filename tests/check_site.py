@@ -59,12 +59,17 @@ assert '<figcaption>'not in html
 clubhtml=(ROOT/'dist/survival-club/index.html').read_text()
 assert 'id="survival-club"' not in html and 'class="carousel"' not in html
 assert 'href="/survival-club/"' in html
-assert '<h1 id="club-title">Survival Club.</h1>' in clubhtml
-assert 'class="carousel-current"' in clubhtml
-assert 'id="interest-dialog"' in clubhtml and 'data-interest="current"' in clubhtml
+assert '<h1>Survival Club.</h1>' in clubhtml
+assert 'carousel' not in clubhtml
+assert 'id="interest-dialog"' in clubhtml
+for pid in ['shirt-black','shirt-white','hat']:
+ assert f'id="{pid}"' in clubhtml and f'data-interest="{pid}"' in clubhtml
+assert clubhtml.count('data-catalog-view')==12
+assert html.index('invitation-title')<html.index('id="updates"')
+assert 'data-product-story' not in html
 assert 'id="updates-form"' in clubhtml
 assert f'/survival-club/</loc>' in (ROOT/'dist/sitemap.xml').read_text()
-print('PASS: responsive optimized founder portrait, product label in paging row.')
+print('PASS: responsive portrait, homepage invitation, three catalog stories and explicit product signup links.')
 
 for file in (ROOT/'dist').rglob('*'):
  if file.suffix in ['.html','.js','.css','.svg','.xml']:
@@ -90,3 +95,16 @@ assert (ROOT/'dist/assets/product-woven-640.webp').stat().st_size<250_000
 for name in ['mesh','top','bottom']:
  assert (ROOT/f'dist/assets/product-{name}-480.webp').stat().st_size<150_000
 print('PASS: product story frames, unique responsive image candidates and mobile asset budgets.')
+
+assets=json.loads((ROOT/'dist/assets/catalog-assets.json').read_text())
+assert len(assets)==12
+for name,asset in assets.items():
+ assert (ROOT/f'dist/assets/{name}-{min(asset["widths"])}.webp').stat().st_size<180_000
+ assert (ROOT/f'dist/assets/{name}.jpg').exists()
+parsed=Page();parsed.feed(clubhtml)
+for tag,a in parsed.tags:
+ if tag=='source' and 'srcset' in a:
+  refs=[candidate.strip().split() for candidate in a['srcset'].split(',')]
+  assert len({ref[1] for ref in refs})==len(refs)
+  for ref,_ in refs:assert (ROOT/'dist'/ref.lstrip('/')).is_file()
+print('PASS: all catalog responsive assets, unique candidates, and mobile image budgets.')

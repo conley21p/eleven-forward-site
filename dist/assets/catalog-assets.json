@@ -1,0 +1,105 @@
+{
+  "club-black-front": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "club-black-angle": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "club-black-back": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "club-black-detail": {
+    "width": 560,
+    "height": 560,
+    "widths": [
+      480,
+      560
+    ]
+  },
+  "club-white-front": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "club-white-angle": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "club-white-back": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "club-white-detail": {
+    "width": 560,
+    "height": 560,
+    "widths": [
+      480,
+      560
+    ]
+  },
+  "club-cap-front": {
+    "width": 535,
+    "height": 505,
+    "widths": [
+      480,
+      535
+    ]
+  },
+  "club-cap-side": {
+    "width": 765,
+    "height": 495,
+    "widths": [
+      480,
+      765
+    ]
+  },
+  "club-cap-angle": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "club-cap-detail": {
+    "width": 510,
+    "height": 400,
+    "widths": [
+      480,
+      510
+    ]
+  }
+}

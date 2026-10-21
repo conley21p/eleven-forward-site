@@ -6,81 +6,15 @@ menu?.addEventListener('click', () => { const open = menu.getAttribute('aria-exp
 navLinks?.addEventListener('click', event => { if (event.target.closest('a')) closeMenu(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu?.getAttribute('aria-expanded') === 'true') { closeMenu(); menu.focus(); } });
 window.matchMedia('(min-width: 641px)').addEventListener('change', closeMenu);
-const carousel = document.querySelector('.carousel');
-let currentProduct = 'shirt-black';
-let pauseCarouselForDialog = () => {};
-let resumeCarouselAfterDialog = () => {};
-if (carousel) {
- const slides = [...carousel.querySelectorAll('.carousel-slide')];
- const dots = [...carousel.querySelectorAll('.carousel-dot')];
- const counter = carousel.querySelector('.carousel-position');
- const productLabel = carousel.querySelector('.carousel-current');
- const toggle = carousel.querySelector('.carousel-toggle');
- const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
- let index = 0;
- let timer;
- let userPaused = reducedMotion.matches;
- let hovering = false;
- let focused = false;
- let inView = false;
- let dialogOpen = false;
- function schedule() {
-  clearTimeout(timer);
-  const playing = !userPaused && !hovering && !focused && inView && !dialogOpen && !document.hidden;
-  counter.setAttribute('aria-live', playing ? 'off' : 'polite');
-  toggle.textContent = userPaused ? 'Play' : 'Pause';
-  toggle.setAttribute('aria-label', userPaused ? 'Start automatic rotation' : 'Pause automatic rotation');
-  if (playing) timer = setTimeout(() => { showSlide(index + 1); schedule(); }, 6000);
- }
- function showSlide(next) {
-  index = (next + slides.length) % slides.length;
-  slides.forEach((slide, i) => { slide.hidden = i !== index; });
-  dots.forEach((dot, i) => dot.setAttribute('aria-pressed', String(i === index)));
-  currentProduct = slides[index].dataset.product;
-  productLabel.textContent = slides[index].dataset.label;
-  counter.textContent = `${String(index + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
- }
- function manualSlide(next) { showSlide(next); schedule(); }
- carousel.querySelector('.carousel-prev').addEventListener('click', () => manualSlide(index - 1));
- carousel.querySelector('.carousel-next').addEventListener('click', () => manualSlide(index + 1));
- dots.forEach((dot, i) => dot.addEventListener('click', () => manualSlide(i)));
- toggle.addEventListener('click', () => { userPaused = !userPaused; schedule(); });
- carousel.addEventListener('mouseenter', () => { hovering = true; schedule(); });
- carousel.addEventListener('mouseleave', () => { hovering = false; schedule(); });
- carousel.addEventListener('focusin', () => { focused = true; schedule(); });
- carousel.addEventListener('focusout', event => { focused = carousel.contains(event.relatedTarget); schedule(); });
- document.addEventListener('visibilitychange', schedule);
- reducedMotion.addEventListener('change', event => { userPaused = event.matches; schedule(); });
- if ('IntersectionObserver' in window) {
-  const observer = new window.IntersectionObserver(entries => { inView = entries[0].isIntersecting; schedule(); }, {threshold:0.25});
-  observer.observe(carousel);
- } else { inView = true; }
- pauseCarouselForDialog = () => { dialogOpen = true; schedule(); };
- resumeCarouselAfterDialog = () => { dialogOpen = false; schedule(); };
- carousel.addEventListener('keydown', event => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); manualSlide(index + (event.key === 'ArrowRight' ? 1 : -1)); }
- });
- let start;
- carousel.addEventListener('touchstart', event => { start = {x:event.changedTouches[0].clientX,y:event.changedTouches[0].clientY}; clearTimeout(timer); }, {passive:true});
- carousel.addEventListener('touchend', event => {
-  if (!start) return;
-  const dx = event.changedTouches[0].clientX - start.x;
-  const dy = event.changedTouches[0].clientY - start.y;
-  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) showSlide(index + (dx < 0 ? 1 : -1));
-  start = null; schedule();
- }, {passive:true});
- carousel.addEventListener('touchcancel', () => { start = null; schedule(); });
- showSlide(0); schedule();
-}
 const dialog = document.querySelector('#interest-dialog');
 if (dialog && typeof dialog.showModal === 'function') {
  let opener;
  const choices = [...dialog.querySelectorAll('[name="product_choices"]')];
  document.querySelectorAll('[data-interest]').forEach(link => link.addEventListener('click', event => {
   event.preventDefault(); opener = link;
-  const selected = link.dataset.interest === 'current' ? currentProduct : link.dataset.interest;
+  const selected = link.dataset.interest;
   choices.forEach(input => { input.checked = input.value === selected; input.setCustomValidity(''); });
-  pauseCarouselForDialog(); dialog.showModal(); document.documentElement.classList.add('modal-open');
+  dialog.showModal(); document.documentElement.classList.add('modal-open');
   choices.find(input => input.checked)?.focus();
  }));
  dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
@@ -88,7 +22,7 @@ if (dialog && typeof dialog.showModal === 'function') {
   const rect = dialog.getBoundingClientRect();
   if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
  });
- dialog.addEventListener('close', () => { document.documentElement.classList.remove('modal-open'); opener?.focus(); resumeCarouselAfterDialog(); });
+ dialog.addEventListener('close', () => { document.documentElement.classList.remove('modal-open'); opener?.focus(); });
 }
 for (const form of document.querySelectorAll('form[data-enabled]')) {
  if (form.dataset.enabled !== 'true') continue;
@@ -280,4 +214,67 @@ if (founderScene) {
  }
  const scene = registerScrollScene(founderScene, update);
  motion.addEventListener('change', update); scene.enable(true);
+}
+
+// Catalog views scrub with natural scroll. Static galleries are the default.
+function catalogStoryFrame(progress) {
+ const p = Math.max(0, Math.min(4, progress));
+ const view = Math.min(3, Math.floor(p));
+ const transition = view === 0 ? 1 : sceneEase((p - view) / .2);
+ const weights = [0,0,0,0];
+ weights[view] = transition;
+ if (view > 0) weights[view - 1] = 1 - transition;
+ return {weights, active:transition >= .5 ? view : view - 1};
+}
+for (const story of document.querySelectorAll('[data-catalog-story]')) {
+ const stage = story.querySelector('.catalog-sticky');
+ const views = [...story.querySelectorAll('[data-catalog-view]')];
+ const steps = [...story.querySelectorAll('[data-catalog-step]')];
+ const images = views.map(view => view.querySelector('img'));
+ const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+ const header = document.querySelector('.header');
+ let settled = 0;
+ const decoded = new WeakSet();
+ const decoding = new WeakSet();
+ function prepare(index) {
+  const image = images[index];
+  if (!image || decoded.has(image) || decoding.has(image)) return;
+  image.loading = 'eager'; decoding.add(image);
+  const decode = image.decode ? image.decode() : image.complete && image.naturalWidth ? Promise.resolve() : new Promise((resolve,reject) => { image.addEventListener('load',resolve,{once:true}); image.addEventListener('error',reject,{once:true}); });
+  decode.then(() => { decoded.add(image); scene.schedule(); }).catch(() => { decoding.delete(image); });
+ }
+ function configure() {
+  const enhanced = !motion.matches && window.innerHeight >= 600;
+  story.classList.toggle('catalog-ready', enhanced);
+  story.style.setProperty('--catalog-header', `${header?.getBoundingClientRect().height ?? 82}px`);
+  if (!enhanced) views.forEach(view => { view.style.opacity = ''; view.style.transform = ''; view.removeAttribute('aria-hidden'); });
+  return enhanced;
+ }
+ function update() {
+  if (!configure()) return;
+  const rect = story.getBoundingClientRect();
+  if (rect.top > window.innerHeight * 1.5 || rect.bottom < 0) return;
+  prepare(0);
+  const travel = Math.max(1, rect.height - stage.getBoundingClientRect().height);
+  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / travel) * 4;
+  // Prepare all intervening views on rapid scroll and the next view before it enters.
+  for (let i=1;i<=Math.min(3,Math.floor(progress + .35));i++) prepare(i);
+  const candidate = catalogStoryFrame(progress);
+  if (candidate.weights.every((weight,i) => weight === 0 || decoded.has(images[i]))) settled = progress;
+  const frame = catalogStoryFrame(settled);
+  views.forEach((view,i) => {
+   view.style.opacity = String(frame.weights[i]);
+   view.style.transform = `translateY(${(1 - frame.weights[i]) * 16}px)`;
+   view.setAttribute('aria-hidden', String(i !== frame.active));
+  });
+  steps.forEach((step,i) => { if(i === frame.active) step.setAttribute('aria-current','step'); else step.removeAttribute('aria-current'); });
+ }
+ const scene = registerScrollScene(story,update);
+ motion.addEventListener('change', () => { configure(); scene.schedule(); });
+ // Reconfigure offscreen stories too when a short viewport changes the layout.
+ const resizeCatalog = () => { configure(); scene.schedule(); };
+ window.addEventListener('resize',resizeCatalog);
+ window.addEventListener('orientationchange',resizeCatalog);
+ // Configure every story immediately so anchor geometry does not change on entry.
+ configure(); scene.enable(true);
 }

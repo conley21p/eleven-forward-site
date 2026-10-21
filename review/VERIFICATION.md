@@ -125,3 +125,14 @@ Removed the third P001 moment and its progress indicator. The story now ends on 
 
 ### Static P001 hero
 Removed all hero scroll choreography, pinned space, magnifier and step indicators. Restored the responsive static hero with full product image, original introduction and modal CTA. Removed obsolete hero animation code and styles. Rebuilt, reviewed locally, and passed 32 remaining tests plus static site checks.
+
+### Survival Club catalog, retail tee imagery, and homepage invitation (October 21, 2026)
+
+- Added the image-led invitation after Mark of the Survivors and before signup. Its link navigates to the collection without opening the modal. P001 remains a static hero.
+- Replaced the carousel with black tee, white tee and cap stories, four reversible views each. Removed carousel timing/swipe code and modal dependencies. Desktop image placement alternates right, left, right, including mirrored progress indicators on the white tee. Tablet/mobile use stacked layouts.
+- Generated six tee masters using the owner-supplied Premium Retail Tee screenshot for visible cut/material appearance and original Eleven Forward artwork for front/back designs. Generated one cap angle, preserved cap front/side crops, and prepared graphic/embroidery details. Checked lettering, colors, graphic arrangement, ribbon and garment shape visually. Images remain concept visualizations; supplier fiber composition, dimensions and pixel-identical print distress cannot be inferred from a screenshot.
+- All twelve mobile WebP variants are under 39 KB (180 KB target). Masters/reference/prompts are outside dist. The new image preparation script records dimensions and unique responsive candidates.
+- Thirty automated tests pass, covering view mapping, reverse/rapid progress, controlled decode delay, reduced-motion/short-screen fallback, each product's modal selection, multiple interests, close/focus restoration, no automatic modal on anchors, existing signup behavior and mark animation. Static checks pass for routes, anchors, consent, launch guard, images and absence of em dashes. Obsolete carousel tests were replaced.
+- Browser reviewed 375 × 812, 768 × 1024 and 1440 × 1000, plus 720 × 500 short-screen layout (equivalent CSS viewport to 200% zoom at 1440 × 1000). Checked forward/reverse scrolling, direct product anchors, resizing and modal selections for all three products; no horizontal overflow observed. The homepage invitation's direct navigation and mobile stacked layout were reviewed.
+- A script-free served fixture verified all 12 images in normal flow with no sticky stages. Reduced-motion logic and slow decoding were verified in controlled tests; OS reduced motion, actual browser zoom and real network throttling were not toggled. No real form submission was sent; signup remains disabled.
+- Both handoff archives refreshed. Production deployment is not independently verified by this local review.
