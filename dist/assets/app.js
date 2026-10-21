@@ -229,7 +229,8 @@ function catalogStoryFrame(progress, zoomBack = false) {
  const zoom = zoomBack ? sceneEase((p - 2) / .8) : 0;
  // The last tee moment continues using the back image itself, not a replacement crop.
  if (zoomBack && p >= 2) { weights.fill(0); weights[1] = 1; }
- return {weights, active, visualActive:zoomBack && p >= 2 ? 1 : active, zoom, slide:sceneEase((p - 1) / .2)};
+ const positions = weights.map((_,i) => i === view ? (view === 0 ? 0 : (transition - 1) * 100) : i === view - 1 ? transition * 100 : i < view ? 100 : -100);
+ return {weights, positions, active, visualActive:zoomBack && p >= 2 ? 1 : active, zoom, slide:sceneEase((p - 1) / .2)};
 }
 for (const story of document.querySelectorAll('[data-catalog-story]')) {
  const stage = story.querySelector('.catalog-sticky');
@@ -273,9 +274,9 @@ for (const story of document.querySelectorAll('[data-catalog-story]')) {
   if (candidate.weights.every((weight,i) => weight === 0 || decoded.has(images[i]))) settled = progress;
   const frame = catalogStoryFrame(settled,zoomBack);
   views.forEach((view,i) => {
-   const sliding = zoomBack && i < 2;
+   const sliding = !zoomBack || i < 2;
    view.style.opacity = String(sliding ? (frame.weights[i] > 0 ? 1 : 0) : frame.weights[i]);
-   view.style.transform = sliding ? `translateX(${(i === 0 ? frame.slide : frame.slide - 1) * 100}%)` : `translateY(${(1 - frame.weights[i]) * 16}px)`;
+   view.style.transform = sliding ? `translateX(${zoomBack ? (i === 0 ? frame.slide : frame.slide - 1) * 100 : frame.positions[i]}%)` : `translateY(${(1 - frame.weights[i]) * 16}px)`;
    view.setAttribute('aria-hidden', String(i !== frame.visualActive));
   });
   if (zoomBack) {

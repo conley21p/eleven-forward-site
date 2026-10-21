@@ -229,6 +229,6 @@
 @media(max-width:640px){.menu{display:inline-flex;align-items:center;justify-content:center}}
 @media(prefers-reduced-motion:reduce){.menu-icon::before,.menu-icon::after{transition:none}}
 /* Tee fronts exit right as their backs arrive from the left. */
-.catalog-ready.catalog-tee .catalog-gallery{overflow:hidden}
+.catalog-ready .catalog-gallery{overflow:hidden}
 .catalog-steps li{height:24px;width:10px}
 .catalog-step-name{top:50%;transform:translateY(-50%)}

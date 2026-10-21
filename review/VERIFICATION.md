@@ -158,3 +158,7 @@ Replaced Menu + text with a neutral carbon two-line icon button that becomes an 
 Both tees now slide their fronts right and their backs in from the left during the first-to-second transition. Both images stay opaque while translating, clipped inside the gallery. The subsequent same-image back-graphic zoom and static/reduced-motion galleries remain functional. Removed visible numeric spans from all catalog progress indicators, preserving markers, active view labels and accessible names.
 
 All 32 tests and static checks pass. Browser review at 375 × 812 verified the icon color (rgb 16,17,18), opening/closing, Escape/focus restoration and navigation into the catalog. Mid-transition inspection showed front translateX(48.15%) and back translateX(-51.85%), both opacity 1, followed by a settled back view. Indicator text contains view names only. Screenshot proofs are mobile-menu-icon.png and tee-slide-mobile.png. Actual mobile Safari was not run; the explicit WebKit appearance/text-color declarations address its default styling.
+
+### Cap slide transitions
+
+Applied the same right-out/left-in slide to all three cap view changes. Both participating images remain opaque and are clipped within the gallery; reverse scrolling reverses their positions. All 33 tests and static checks pass, including each cap transition at its midpoint. Mobile browser inspection confirmed outgoing translateX(48.38%), incoming translateX(-51.62%), both opacity 1, and no horizontal overflow. Proof: cap-slide-mobile.png.

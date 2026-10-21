@@ -17,7 +17,7 @@ function setup(zoomBack=false){
  const flush=()=>{const fn=callback;callback=null;fn?.()};
  return {context,views,steps,images,classes,motion,window,document,flush,scroll(v){scroll=v;events.scroll();flush()},resize(h){window.innerHeight=h;events.resize();flush()},async decode(i){resolvers[i]?.();await Promise.resolve();flush()}};
 }
-test('four views crossfade only at transitions, hold, and reverse deterministically',()=>{
+test('four views map transitions, hold, and reverse deterministically',()=>{
  const s=setup(),frame=s.context.catalogStoryFrame;
  assert.equal(frame(0).active,0);assert.equal(frame(1.1).weights.length,4);assert.ok(Math.abs(frame(1.1).weights[0]-.5)<.001);
  for(const p of [0,.9,1.1,1.8,2.1,2.8,3.1,4,2.4,.1])assert.ok(Math.abs(frame(p).weights.reduce((a,b)=>a+b,0)-1)<1e-9);
@@ -52,5 +52,16 @@ test('both tee front/back views slide horizontally with full opacity and reverse
  assert.equal(s.views[0].style.opacity,'1');assert.equal(s.views[1].style.opacity,'1');
  assert.ok(Math.abs(parseFloat(s.views[0].style.transform.slice(11))-50)<.01);assert.ok(Math.abs(parseFloat(s.views[1].style.transform.slice(11))+50)<.01);
  s.scroll(1100);assert.equal(s.views[1].style.transform,'translateX(0%)');assert.equal(s.views[0].style.opacity,'0');
+ s.scroll(0);assert.equal(s.views[0].style.transform,'translateX(0%)');assert.equal(s.views[0].style.opacity,'1');
+});
+
+test('all cap view transitions exit right and enter left without fading',async()=>{
+ const s=setup();s.flush();await s.decode(0);
+ for(let i=1;i<4;i++){
+  s.scroll(i*600+60);await s.decode(i);
+  assert.equal(s.views[i-1].style.opacity,'1');assert.equal(s.views[i].style.opacity,'1');
+  assert.ok(Math.abs(parseFloat(s.views[i-1].style.transform.slice(11))-50)<.01);
+  assert.ok(Math.abs(parseFloat(s.views[i].style.transform.slice(11))+50)<.01);
+ }
  s.scroll(0);assert.equal(s.views[0].style.transform,'translateX(0%)');assert.equal(s.views[0].style.opacity,'1');
 });
