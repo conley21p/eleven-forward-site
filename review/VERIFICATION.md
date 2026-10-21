@@ -122,3 +122,6 @@ Material now grows into a circular Volt-outlined inset with a leader back to the
 
 ### Remove P001 fit step
 Removed the third P001 moment and its progress indicator. The story now ends on the material magnifier, with scroll travel reduced to 160vh desktop / 120svh mobile. Browser inspection confirms two moments, two indicators, no fit copy, and Mission outside the product section. All 35 tests and static checks pass.
+
+### Static P001 hero
+Removed all hero scroll choreography, pinned space, magnifier and step indicators. Restored the responsive static hero with full product image, original introduction and modal CTA. Removed obsolete hero animation code and styles. Rebuilt, reviewed locally, and passed 32 remaining tests plus static site checks.

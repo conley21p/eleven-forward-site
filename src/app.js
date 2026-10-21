@@ -240,10 +240,6 @@ if (markStory) {
 
 const sceneClamp = value => Math.max(0, Math.min(1, value));
 const sceneEase = value => { const t = sceneClamp(value); return t * t * (3 - 2 * t); };
-function productStoryFrame(progress) {
- const material = sceneEase((progress - 1) / 0.2);
- return {weights:[1 - material, material]};
-}
 function missionSceneFrame(top, height) {
  const progress = (height - top) / (height * 0.5);
  return {lines:[0,0.15,0.3].map(start => sceneEase((progress - start) / 0.7)), finish:sceneEase((progress - 0.45) / 0.55)};
@@ -251,65 +247,6 @@ function missionSceneFrame(top, height) {
 function founderSceneFrame(top, bottom, titleTop, height) {
  const enter = sceneEase((height - top) / (height * 0.5));
  return {enter, copy:sceneEase((height - titleTop) / (height * 0.45)), glow:sceneEase((height * 0.85 - titleTop) / (height * 0.35)) * sceneEase(bottom / (height * 0.5))};
-}
-const productStory = document.querySelector('[data-product-story]');
-if (productStory) {
- const moments = [...productStory.querySelectorAll('[data-product-moment]')];
- const steps = [...productStory.querySelectorAll('[data-product-step]')];
- const pictures = ['overview','mesh'].map(name => productStory.querySelector(`[data-product-image="${name}"]`));
- const images = pictures.map(picture => picture.querySelector('img'));
- const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
- const header = document.querySelector('.header');
- let enhanced = false, lastProgress = 0;
- const ready = image => image.complete && image.naturalWidth > 0 && (!image.decode || image.dataset.decoded === 'true');
- function prepare(index) {
-  const image = images[index];
-  if (image.loading === 'lazy') image.loading = 'eager';
-  if (!image.dataset.decoding) {
-   image.dataset.decoding = 'true';
-   image.decode?.().then(() => { image.dataset.decoded = 'true'; scene.schedule(); }).catch(() => {});
-  }
- }
- function restore() {
-  moments.forEach(moment => { moment.style.opacity = ''; moment.removeAttribute('aria-hidden'); moment.querySelector('.product-copy').style.transform = ''; });
-  pictures.forEach(picture => { picture.style.opacity = ''; picture.style.transform = ''; });
- }
- function configure() {
-  const shouldEnhance = !motion.matches && window.innerHeight >= 600;
-  if (enhanced !== shouldEnhance) {
-   enhanced = shouldEnhance; productStory.classList.toggle('product-story-ready', enhanced);
-   if (!enhanced) restore();
-  }
-  productStory.style.setProperty('--scene-header', `${header?.getBoundingClientRect().height ?? 82}px`);
- }
- function update() {
-  configure();
-  if (!enhanced) return;
-  const rect = productStory.getBoundingClientRect();
-  const travel = rect.height - productStory.querySelector('.product-sticky').getBoundingClientRect().height;
-  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / Math.max(1, travel)) * 2;
-  // Prepare the next view before its transition; hold the last ready frame on slow networks.
-  if (progress > 0.5) prepare(1);
-  const needed = progress > 1 ? 1 : 0;
-  const settled = ready(images[needed]) ? progress : lastProgress;
-  lastProgress = settled;
-  const state = productStoryFrame(settled);
-  moments.forEach((moment, i) => {
-   moment.style.opacity = String(state.weights[i]);
-   moment.setAttribute('aria-hidden', String(i !== (state.weights[1] >= .5 ? 1 : 0)));
-   moment.querySelector('.product-copy').style.transform = `translateY(${(1 - state.weights[i]) * 20}px)`;
-  });
-  const active = state.weights[1] >= .5 ? 1 : 0;
-  steps.forEach((step,i) => { if(i === active) step.setAttribute('aria-current','step'); else step.removeAttribute('aria-current'); });
-  pictures[0].style.transform = '';
-  const magnify = sceneEase((settled - 1) / .35);
-  pictures[1].style.setProperty('--lens-reveal', String(magnify));
-  pictures[1].style.setProperty('--lens-scale', String(.12 + .88 * magnify));
-  pictures[1].style.setProperty('--lens-x', `${(1 - magnify) * 100}%`);
- }
- const scene = registerScrollScene(productStory, update);
- motion.addEventListener('change', () => { configure(); scene.schedule(); });
- configure(); prepare(0); scene.enable(true);
 }
 const missionScene = document.querySelector('[data-mission-scene]');
 if (missionScene) {

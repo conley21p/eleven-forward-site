@@ -20,30 +20,6 @@ function setup(product=false) {
  const flush=()=>{const fn=callback;callback=null;fn?.()};
  return {context,events,window,document,classes,moments,pictures,images,steps,motion,flush,queued:()=>queued,scrollTo(v){scroll=v;events.scroll();flush()},async decode(i){resolvers[i]();await Promise.resolve();flush()}};
 }
-test('product story has two reversible steps and holds material through the end',()=>{
- const frame=setup().context.productStoryFrame;
- assert.equal(frame(0).weights[0],1);
- assert.equal(frame(1.1).weights.length,2);
- assert.equal(frame(1.1).weights[0]+frame(1.1).weights[1],1);
- assert.equal(frame(2).weights[1],1);
- assert.equal(frame(.5).weights[0],1);
-});
-test('slow detail decoding holds the last ready image and resumes without another scroll',async()=>{
- const s=setup(true);s.flush();await s.decode(0);
- s.scrollTo(600);assert.ok(s.images[1].dataset.decoding);assert.equal(s.moments[0].style.opacity,'1');
- s.scrollTo(1200);assert.equal(s.moments[0].style.opacity,'1');assert.equal(s.moments[1].style.opacity,'0');
- await s.decode(1);assert.equal(s.moments[1].style.opacity,'1');assert.equal(s.steps[1].attributes['aria-current'],'step');assert.equal(s.pictures[1].style['--lens-reveal'],'1');
- s.scrollTo(1600);assert.equal(s.moments[1].style.opacity,'1');assert.equal(s.steps[1].attributes['aria-current'],'step');
- s.scrollTo(300);assert.equal(s.moments[0].style.opacity,'1');
-});
-test('short-screen and reduced-motion fallback remove pinned presentation and expose every message',async()=>{
- const s=setup(true);s.flush();await s.decode(0);assert.ok(s.classes.has('product-story-ready'));
- s.window.innerHeight=500;s.events.resize();s.flush();assert.equal(s.classes.has('product-story-ready'),false);
- for(const moment of s.moments){assert.equal(moment.style.opacity,'');assert.equal(moment.attributes['aria-hidden'],undefined)}
- s.window.innerHeight=1000;s.events.resize();s.flush();assert.ok(s.classes.has('product-story-ready'));
- s.motion.matches=true;s.motion.change();s.flush();assert.equal(s.classes.has('product-story-ready'),false);
- for(const picture of s.pictures)assert.equal(picture.style.opacity,'');
-});
 test('mission completes by mid-screen and founder light fades on exit without changing the image',()=>{
  const s=setup(),mission=s.context.missionSceneFrame,founder=s.context.founderSceneFrame;
  assert.equal(mission(1000,1000).lines[0],0);for(const value of mission(500,1000).lines)assert.equal(value,1);assert.equal(mission(500,1000).finish,1);

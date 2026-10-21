@@ -78,8 +78,8 @@ assert small['d']=='M0 95 19 37H66L47 95Z' and tall['d']=='M57 95 88 0H141L110 9
 print('PASS: four story panels, original icon geometry and no em dashes in deployed content.')
 
 
-assert len([a for t,a in main.tags if 'data-product-moment' in a])==2
-assert len([a for t,a in main.tags if 'data-product-image' in a])==2
+assert len([a for t,a in main.tags if 'data-product-moment' in a])==0
+assert len([a for t,a in main.tags if 'data-product-image' in a])==0
 for tag,attrs in main.tags:
  if tag=='source' and 'srcset' in attrs:
   candidates=[c.strip().split() for c in attrs['srcset'].split(',')]
