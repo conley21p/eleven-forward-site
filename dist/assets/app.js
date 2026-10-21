@@ -1,8 +1,8 @@
 document.documentElement.classList.add('js');
 const menu = document.querySelector('.menu');
 const navLinks = document.querySelector('.nav-links');
-function closeMenu() { if (!menu || !navLinks) return; menu.setAttribute('aria-expanded', 'false'); navLinks.dataset.open = 'false'; menu.textContent = 'Menu +'; }
-menu?.addEventListener('click', () => { const open = menu.getAttribute('aria-expanded') !== 'true'; menu.setAttribute('aria-expanded', String(open)); navLinks.dataset.open = String(open); menu.textContent = open ? 'Close −' : 'Menu +'; });
+function closeMenu() { if (!menu || !navLinks) return; menu.setAttribute('aria-expanded', 'false'); navLinks.dataset.open = 'false'; menu.setAttribute('aria-label', 'Open menu'); }
+menu?.addEventListener('click', () => { const open = menu.getAttribute('aria-expanded') !== 'true'; menu.setAttribute('aria-expanded', String(open)); navLinks.dataset.open = String(open); menu.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); });
 navLinks?.addEventListener('click', event => { if (event.target.closest('a')) closeMenu(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu?.getAttribute('aria-expanded') === 'true') { closeMenu(); menu.focus(); } });
 window.matchMedia('(min-width: 641px)').addEventListener('change', closeMenu);
@@ -229,7 +229,7 @@ function catalogStoryFrame(progress, zoomBack = false) {
  const zoom = zoomBack ? sceneEase((p - 2) / .8) : 0;
  // The last tee moment continues using the back image itself, not a replacement crop.
  if (zoomBack && p >= 2) { weights.fill(0); weights[1] = 1; }
- return {weights, active, visualActive:zoomBack && p >= 2 ? 1 : active, zoom};
+ return {weights, active, visualActive:zoomBack && p >= 2 ? 1 : active, zoom, slide:sceneEase((p - 1) / .2)};
 }
 for (const story of document.querySelectorAll('[data-catalog-story]')) {
  const stage = story.querySelector('.catalog-sticky');
@@ -273,8 +273,9 @@ for (const story of document.querySelectorAll('[data-catalog-story]')) {
   if (candidate.weights.every((weight,i) => weight === 0 || decoded.has(images[i]))) settled = progress;
   const frame = catalogStoryFrame(settled,zoomBack);
   views.forEach((view,i) => {
-   view.style.opacity = String(frame.weights[i]);
-   view.style.transform = `translateY(${(1 - frame.weights[i]) * 16}px)`;
+   const sliding = zoomBack && i < 2;
+   view.style.opacity = String(sliding ? (frame.weights[i] > 0 ? 1 : 0) : frame.weights[i]);
+   view.style.transform = sliding ? `translateX(${(i === 0 ? frame.slide : frame.slide - 1) * 100}%)` : `translateY(${(1 - frame.weights[i]) * 16}px)`;
    view.setAttribute('aria-hidden', String(i !== frame.visualActive));
   });
   if (zoomBack) {

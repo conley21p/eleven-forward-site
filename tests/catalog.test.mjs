@@ -46,3 +46,11 @@ test('tee story goes front to back, then zooms that same back image and reverses
  s.scroll(1100);assert.equal(s.images[1].style.transform.includes('scale(1)'),true);assert.equal(s.views[1].querySelector('figcaption').textContent,'Back');
  s.resize(500);assert.equal(s.images[1].style.transform,'');assert.equal(s.views[2].attrs['aria-hidden'],undefined);
 });
+
+test('both tee front/back views slide horizontally with full opacity and reverse',async()=>{
+ const s=setup(true);s.flush();await s.decode(0);s.scroll(880);await s.decode(1);
+ assert.equal(s.views[0].style.opacity,'1');assert.equal(s.views[1].style.opacity,'1');
+ assert.ok(Math.abs(parseFloat(s.views[0].style.transform.slice(11))-50)<.01);assert.ok(Math.abs(parseFloat(s.views[1].style.transform.slice(11))+50)<.01);
+ s.scroll(1100);assert.equal(s.views[1].style.transform,'translateX(0%)');assert.equal(s.views[0].style.opacity,'0');
+ s.scroll(0);assert.equal(s.views[0].style.transform,'translateX(0%)');assert.equal(s.views[0].style.opacity,'1');
+});
