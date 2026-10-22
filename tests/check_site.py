@@ -62,14 +62,21 @@ assert 'href="/survival-club/"' in html
 assert '<h1>Survival Club.</h1>' in clubhtml
 assert 'carousel' not in clubhtml
 assert 'id="interest-dialog"' in clubhtml
-for pid in ['shirt-black','shirt-white','hat']:
+for pid in ['shirt-black','shirt-white']:
  assert f'id="{pid}"' in clubhtml and f'data-interest="{pid}"' in clubhtml
-assert clubhtml.count('data-catalog-view')==10
+assert clubhtml.count('data-catalog-view')==6
+assert 'catalog-index' not in clubhtml
+assert 'id="hat"' not in clubhtml and 'value="hat"' not in clubhtml
+assert 'Bad Day to Be a Colon Cap' not in clubhtml
+for form_id in ['updates-form','interest-form']:
+ match=re.search(r'<form id="'+form_id+r'".*?</form>',clubhtml,re.S)
+ parsed=Page();parsed.feed(match.group(0))
+ assert [a['value'] for t,a in parsed.tags if t=='input' and a.get('name')=='product_choices']==['p001','shirt-black','shirt-white']
 assert html.index('invitation-title')<html.index('id="updates"')
 assert 'data-product-story' not in html
 assert 'id="updates-form"' in clubhtml
 assert f'/survival-club/</loc>' in (ROOT/'dist/sitemap.xml').read_text()
-print('PASS: responsive portrait, homepage invitation, three catalog stories and explicit product signup links.')
+print('PASS: responsive portrait, homepage invitation, two tee catalog stories and explicit product signup links.')
 
 for file in (ROOT/'dist').rglob('*'):
  if file.suffix in ['.html','.js','.css','.svg','.xml']:

@@ -98,8 +98,6 @@
 .catalog-intro{padding:65px var(--pad) 40px}
 .catalog-intro h1{font-size:clamp(60px,8vw,118px);font-weight:400;margin-bottom:30px}
 .catalog-intro-copy{font-size:17px;max-width:600px;color:var(--slate);margin:0 0 36px}
-.catalog-index{display:flex;gap:28px;flex-wrap:wrap}
-.catalog-index a{display:inline-flex;gap:30px;justify-content:space-between;font-size:12px;border-bottom:1px solid var(--carbon);padding:10px 0;text-decoration:none;min-width:125px;min-height:44px}
 .catalog-story{position:relative;border-top:1px solid var(--rule);background:var(--chalk);scroll-margin-top:12px}
 .catalog-story:nth-of-type(even){background:#e8e7e2}
 .catalog-sticky{padding:44px var(--pad)}
@@ -131,7 +129,7 @@
 @media(max-width:900px){.catalog-ready .catalog-sticky{grid-template-columns:.8fr 1.2fr}.catalog-copy h2{font-size:32px}.catalog-step-name{display:none}.catalog-ready .catalog-steps{right:9px}.catalog-ready .catalog-gallery{margin-right:8px}}
 @media(max-width:640px){
  .club-invitation{grid-template-columns:1fr;padding:42px var(--pad);gap:30px}.invitation-copy h2{font-size:54px}.invitation-copy>p:not(.eyebrow){font-size:13px}
- .catalog-intro{padding-top:36px;padding-bottom:30px}.catalog-intro h1{font-size:58px}.catalog-intro-copy{font-size:14px}.catalog-index{gap:18px}.catalog-index a{min-width:85px;gap:12px;font-size:11px}
+ .catalog-intro{padding-top:36px;padding-bottom:30px}.catalog-intro h1{font-size:58px}.catalog-intro-copy{font-size:14px}
  .catalog-sticky{padding:32px var(--pad)}.catalog-copy h2{font-size:30px;margin-bottom:12px}.catalog-copy>p:not(.eyebrow){font-size:12px;margin-bottom:0}.catalog-copy .eyebrow{margin-bottom:16px}
  .catalog-gallery{gap:12px}.catalog-view figcaption{left:7px;bottom:7px;font-size:8px;padding:3px 6px}
  .catalog-ready{height:calc(100svh - var(--catalog-header,71px) + 180svh)}

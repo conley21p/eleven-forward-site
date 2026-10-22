@@ -162,3 +162,9 @@ All 32 tests and static checks pass. Browser review at 375 × 812 verified the i
 ### Cap slide transitions
 
 Applied the same right-out/left-in slide to all three cap view changes. Both participating images remain opaque and are clipped within the gallery; reverse scrolling reverses their positions. All 33 tests and static checks pass, including each cap transition at its midpoint. Mobile browser inspection confirmed outgoing translateX(48.38%), incoming translateX(-51.62%), both opacity 1, and no horizontal overflow. Proof: cap-slide-mobile.png.
+
+### Survival Club tees only (October 22, 2026)
+
+Removed the cap story and the introductory Black tee / White tee / Cap anchor row. Collection-page footer and modal choices now contain only P001, the black tee and the white tee; the homepage remains unchanged. Removed unused anchor-row styling and updated collection metadata. Original cap assets remain preserved.
+
+All 33 automated tests and static checks pass, including assertions for six tee views, no cap section or choice, and no introductory product-link row. Local browser review confirmed the introduction flows directly into the black tee, followed by the white tee and signup. Signup remains disabled. Screenshot: collection-tees-only.png. Production deployment was not independently verified.
