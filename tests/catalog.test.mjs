@@ -87,3 +87,13 @@ test('each tee centers its own chest lettering and reduced motion clears both zo
   assert.equal(s.views[0].querySelector('figcaption').textContent,'Front');
  }
 });
+
+test('mobile snap destinations hold completed front, chest logo, back and detail frames',()=>{
+ const {context}=setup(true),frame=context.catalogStoryFrame;
+ const destinations=[0,.4,.665,.9625].map(position=>frame(position*4,true));
+ destinations.forEach((state,i)=>assert.equal(state.active,i));
+ assert.equal(destinations[0].frontZoom,0);
+ assert.equal(destinations[1].frontZoom,1);
+ assert.equal(destinations[2].slide,1);assert.equal(destinations[2].zoom,0);
+ assert.equal(destinations[3].zoom,1);
+});

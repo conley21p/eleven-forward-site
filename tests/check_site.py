@@ -66,6 +66,8 @@ for pid in ['shirt-black','shirt-white']:
  assert f'id="{pid}"' in clubhtml and f'data-interest="{pid}"' in clubhtml
 assert clubhtml.count('data-catalog-view')==6
 assert clubhtml.count('data-catalog-step')==8
+assert clubhtml.count('class="catalog-snap-stop"')==8
+assert 'catalog-snap-stop' not in html
 assert clubhtml.count('View 2: Front logo')==2
 assert clubhtml.count('270vw')==2
 assert 'catalog-index' not in clubhtml
