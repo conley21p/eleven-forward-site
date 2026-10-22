@@ -214,8 +214,8 @@
 }
 /* Expanded text and script-free navigation must remain reachable by scrolling. */
 @media(max-width:640px){html:not(.js) .hero{height:auto;min-height:0;grid-template-rows:auto auto auto auto}html:not(.js) .hero .product-stage img{height:auto}}
-.catalog-ready.catalog-tee{height:calc(100svh - var(--catalog-header,82px) + 180vh)}
-@media(max-width:640px){.catalog-ready.catalog-tee{height:calc(100svh - var(--catalog-header,71px) + 135svh)}}
+.catalog-ready.catalog-tee{height:calc(100svh - var(--catalog-header,82px) + 240vh)}
+@media(max-width:640px){.catalog-ready.catalog-tee{height:calc(100svh - var(--catalog-header,71px) + 180svh)}}
 
 /* Native-looking mobile menu icon with explicit neutral button color. */
 .menu{appearance:none;-webkit-appearance:none;color:var(--carbon);-webkit-text-fill-color:currentColor;border:0;border-radius:0;background:transparent;width:44px;height:44px;padding:10px;flex-shrink:0}

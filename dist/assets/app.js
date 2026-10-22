@@ -218,7 +218,19 @@ if (founderScene) {
 
 // Catalog views scrub with natural scroll. Static galleries are the default.
 function catalogStoryFrame(progress, zoomBack = false) {
- const count = zoomBack ? 3 : 4;
+ if (zoomBack) {
+  const p = Math.max(0, Math.min(4, progress));
+  const frontZoom = sceneEase((p - 1) / .35) * (1 - sceneEase((p - 2) / .25));
+  const slide = sceneEase((p - 2.25) / .25);
+  const backVisible = slide >= .5;
+  return {
+   weights:[slide < 1 ? 1 : 0, slide > 0 ? 1 : 0, 0],
+   active:p < 1 ? 0 : p < 2 ? 1 : p < 3 ? 2 : 3,
+   visualActive:backVisible ? 1 : 0,
+   frontZoom, zoom:sceneEase((p - 3) / .8), slide
+  };
+ }
+ const count = 4;
  const p = Math.max(0, Math.min(count, progress));
  const view = Math.min(count - 1, Math.floor(p));
  const transition = view === 0 ? 1 : sceneEase((p - view) / .2);
@@ -226,11 +238,8 @@ function catalogStoryFrame(progress, zoomBack = false) {
  weights[view] = transition;
  if (view > 0) weights[view - 1] = 1 - transition;
  const active = transition >= .5 ? view : view - 1;
- const zoom = zoomBack ? sceneEase((p - 2) / .8) : 0;
- // The last tee moment continues using the back image itself, not a replacement crop.
- if (zoomBack && p >= 2) { weights.fill(0); weights[1] = 1; }
  const positions = weights.map((_,i) => i === view ? (view === 0 ? 0 : (transition - 1) * 100) : i === view - 1 ? transition * 100 : i < view ? 100 : -100);
- return {weights, positions, active, visualActive:zoomBack && p >= 2 ? 1 : active, zoom, slide:sceneEase((p - 1) / .2)};
+ return {weights, positions, active, visualActive:active};
 }
 for (const story of document.querySelectorAll('[data-catalog-story]')) {
  const stage = story.querySelector('.catalog-sticky');
@@ -256,7 +265,8 @@ for (const story of document.querySelectorAll('[data-catalog-story]')) {
   story.style.setProperty('--catalog-header', `${header?.getBoundingClientRect().height ?? 82}px`);
   if (!enhanced) {
    views.forEach(view => { view.style.opacity = ''; view.style.transform = ''; view.removeAttribute('aria-hidden'); });
-   if (zoomBack) { images[1].style.transform = ''; images[1].style.transformOrigin = ''; }
+   if (zoomBack) images.slice(0,2).forEach(image => { image.style.transform = ''; image.style.transformOrigin = ''; });
+   if (zoomBack) views[0].querySelector('figcaption').textContent = 'Front';
    if (zoomBack) views[1].querySelector('figcaption').textContent = 'Back';
   }
   return enhanced;
@@ -267,11 +277,11 @@ for (const story of document.querySelectorAll('[data-catalog-story]')) {
   if (rect.top > window.innerHeight * 1.5 || rect.bottom < 0) return;
   prepare(0);
   const travel = Math.max(1, rect.height - stage.getBoundingClientRect().height);
-  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / travel) * views.length;
+  const progress = sceneClamp(((header?.getBoundingClientRect().bottom ?? 82) - rect.top) / travel) * steps.length;
   // Prepare all intervening views on rapid scroll and the next view before it enters.
   for (let i=1;i<=Math.min(zoomBack ? 1 : 3,Math.floor(progress + .35));i++) prepare(i);
   const candidate = catalogStoryFrame(progress,zoomBack);
-  if (candidate.weights.every((weight,i) => weight === 0 || decoded.has(images[i]))) settled = progress;
+  if (candidate.weights.every((weight,i) => weight === 0 || decoded.has(images[i])) && (!zoomBack || progress < 2 || decoded.has(images[1]))) settled = progress;
   const frame = catalogStoryFrame(settled,zoomBack);
   views.forEach((view,i) => {
    const sliding = !zoomBack || i < 2;
@@ -280,13 +290,20 @@ for (const story of document.querySelectorAll('[data-catalog-story]')) {
    view.setAttribute('aria-hidden', String(i !== frame.visualActive));
   });
   if (zoomBack) {
-   const box = views[1].getBoundingClientRect();
-   const image = images[1];
-   const renderedHeight = Math.min(box.width / (image.naturalWidth || 1), box.height / (image.naturalHeight || 1)) * (image.naturalHeight || 1);
-   const center = (box.height - renderedHeight) / 2 + renderedHeight * .35;
-   image.style.transformOrigin = `50% ${center}px`;
-   image.style.transform = `translateY(${(box.height / 2 - center) * frame.zoom}px) scale(${1 + frame.zoom * 1.2})`;
-   views[1].querySelector('figcaption').textContent = frame.active === 2 ? 'Graphic detail' : 'Back';
+   // Focal points are normalized coordinates measured on each unchanged source.
+   const frontFocal = story.id === 'shirt-white' ? [.64,.292] : [.626,.275];
+   for (const [i,focal,amount,magnification] of [[0,frontFocal,frame.frontZoom,2],[1,[.5,.35],frame.zoom,1.2]]) {
+    const box = views[i].getBoundingClientRect();
+    const image = images[i];
+    const ratio = Math.min(box.width / (image.naturalWidth || 1), box.height / (image.naturalHeight || 1));
+    const width = ratio * (image.naturalWidth || 1), height = ratio * (image.naturalHeight || 1);
+    const x = (box.width - width) / 2 + width * focal[0];
+    const y = (box.height - height) / 2 + height * focal[1];
+    image.style.transformOrigin = `${x}px ${y}px`;
+    image.style.transform = `translate(${(box.width / 2 - x) * amount}px, ${(box.height / 2 - y) * amount}px) scale(${1 + amount * magnification})`;
+   }
+   views[0].querySelector('figcaption').textContent = frame.active === 1 ? 'Front logo' : 'Front';
+   views[1].querySelector('figcaption').textContent = frame.active === 3 ? 'Graphic detail' : 'Back';
   }
   steps.forEach((step,i) => { if(i === frame.active) step.setAttribute('aria-current','step'); else step.removeAttribute('aria-current'); });
  }

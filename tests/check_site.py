@@ -65,6 +65,9 @@ assert 'id="interest-dialog"' in clubhtml
 for pid in ['shirt-black','shirt-white']:
  assert f'id="{pid}"' in clubhtml and f'data-interest="{pid}"' in clubhtml
 assert clubhtml.count('data-catalog-view')==6
+assert clubhtml.count('data-catalog-step')==8
+assert clubhtml.count('View 2: Front logo')==2
+assert clubhtml.count('270vw')==2
 assert 'catalog-index' not in clubhtml
 assert 'id="hat"' not in clubhtml and 'value="hat"' not in clubhtml
 assert 'Bad Day to Be a Colon Cap' not in clubhtml

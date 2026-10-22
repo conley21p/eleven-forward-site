@@ -62,19 +62,20 @@ fields=''.join(f'<input type="hidden" name="{k}" value="{e(v)}">' for k,v in hid
 choices=''.join(f'<label class="product-option"><input type="checkbox" name="product_choices" value="{pid}"><span>{e(label)}</span></label>' for pid,label in products)
 # Four views share one product story and explicit signup selection.
 catalog_assets=json.loads((out/'assets/catalog-assets.json').read_text())
-def catalog_picture(name,alt,eager=False):
+def catalog_picture(name,alt,eager=False,zoom=False):
  asset=catalog_assets[name]
  filebase=asset['filebase']
  candidates=', '.join(f'/assets/{filebase}-{w}.webp {w}w' for w in asset['widths'])
- return f'<picture><source type="image/webp" srcset="{candidates}" sizes="(max-width: 640px) 90vw, (max-width: 900px) 85vw, 62vw"><img src="/assets/{filebase}.png" width="{asset["width"]}" height="{asset["height"]}" alt="{e(alt)}" {'fetchpriority="high"' if eager else 'loading="lazy"'} decoding="async"></picture>'
+ sizes='(max-width: 640px) 270vw, (max-width: 900px) 255vw, 186vw' if zoom else '(max-width: 640px) 90vw, (max-width: 900px) 85vw, 62vw'
+ return f'<picture><source type="image/webp" srcset="{candidates}" sizes="{sizes}"><img src="/assets/{filebase}.png" width="{asset["width"]}" height="{asset["height"]}" alt="{e(alt)}" {'fetchpriority="high"' if eager else 'loading="lazy"'} decoding="async"></picture>'
 catalog_products=[
  ('shirt-black','Survival Club Tee (Black)','A bold expression of resilience and belonging.','black',[('front','Front'),('back','Back'),('detail','Graphic detail')]),
  ('shirt-white','Survival Club Tee (White)','The same shared spirit, expressed in white.','white',[('front','Front'),('back','Back'),('detail','Graphic detail')])
 ]
 catalog_stories=[]
 for index,(pid,label,description,prefix,views) in enumerate(catalog_products):
- figures=''.join(f'<figure class="catalog-view" data-catalog-view>{catalog_picture(f"club-{prefix}-{view}",f"{label}, {viewlabel.lower()} view. Design concept.",index==0 and i==0)}<figcaption>{e(viewlabel)}</figcaption></figure>' for i,(view,viewlabel) in enumerate(views))
- indicators=''.join(f'<li data-catalog-step aria-label="View {i+1}: {e(viewlabel)}" {'aria-current="step"' if i==0 else ""}><span class="catalog-step-name">{e(viewlabel)}</span></li>' for i,(_,viewlabel) in enumerate(views))
+ figures=''.join(f'<figure class="catalog-view" data-catalog-view>{catalog_picture(f"club-{prefix}-{view}",f"{label}, {viewlabel.lower()} view. Design concept.",index==0 and i==0,view=='front')}<figcaption>{e(viewlabel)}</figcaption></figure>' for i,(view,viewlabel) in enumerate(views))
+ indicators=''.join(f'<li data-catalog-step aria-label="View {i+1}: {e(viewlabel)}" {'aria-current="step"' if i==0 else ""}><span class="catalog-step-name">{e(viewlabel)}</span></li>' for i,viewlabel in enumerate(['Front','Front logo','Back','Graphic detail']))
  catalog_stories.append(f'''<section class="catalog-story{' catalog-tee' if prefix != 'cap' else ''}" id="{pid}" data-catalog-story aria-labelledby="{pid}-title"><div class="catalog-sticky"><div class="catalog-copy"><p class="eyebrow"><span class="dot"></span>{index+1:02d} / Survival Club</p><h2 id="{pid}-title">{e(label)}</h2><p>{e(description)}</p><span class="catalog-scroll-hint" aria-hidden="true">Scroll to explore ↓</span></div><div class="catalog-gallery">{figures}</div><ol class="catalog-steps" aria-label="Product view progress">{indicators}</ol><div class="catalog-bottom"><p>Design concept / Concept visualization</p><a class="text-link" href="#updates" data-interest="{pid}">Stay in the loop <span class="arrow" aria-hidden="true">↗</span></a></div></div></section>''')
 clubpage='''<header class="catalog-intro" id="survival-club"><p class="eyebrow"><span class="dot"></span>Wear the belief</p><h1>Survival Club.</h1><p class="catalog-intro-copy">More than apparel. These designs express the culture and mission behind Eleven Forward and our core product, <a href="/#p001">P001</a>.</p></header>'''+''.join(catalog_stories)
 invitation=f'''<section class="club-invitation" aria-labelledby="invitation-title"><div class="invitation-image">{catalog_picture("club-black-front","Black Survival Club tee front on the supplier-reference cut. Design concept.")}{catalog_picture("club-black-back","Black Survival Club tee back graphic on the supplier-reference cut. Design concept.")}</div><div class="invitation-copy"><p class="eyebrow"><span class="dot"></span>Wear the belief</p><h2 id="invitation-title">Survival Club.</h2><p>The culture behind Eleven Forward. Wear the spirit of a community moving forward together.</p><a class="text-link" href="/survival-club/">Explore Survival Club <span class="arrow" aria-hidden="true">→</span></a></div></section>'''
