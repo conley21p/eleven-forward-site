@@ -1,0 +1,24 @@
+{% if shop.customer_accounts_enabled %}
+<div class="account-entry" data-account-entry{% if settings.customer_account_client_id != blank %} data-account-client="oauth"{% endif %} data-account-authenticated="{% if customer %}true{% else %}false{% endif %}" data-account-state-url="{{ routes.root_url }}?sections=customer-account-state">
+<div data-account-control>
+{% if customer %}
+<details class="account-menu" data-native-account>
+<summary>Profile <span aria-hidden="true">⌄</span></summary>
+<div class="account-menu-links">
+{% if customer.email != blank %}<span class="account-menu-identity">{{ customer.email | escape }}</span>{% endif %}
+<a href="{{ routes.account_profile_url }}" target="_top">Profile</a>
+<a href="{{ routes.account_logout_url }}" data-account-signout target="_top">Sign out</a>
+</div>
+</details>
+{% else %}
+<a class="account-fallback" data-account-login href="{{ routes.storefront_login_url }}" target="_top" rel="nofollow">Login</a>
+{% endif %}
+</div>
+{% if settings.customer_account_client_id != blank %}
+<script type="application/json" data-account-config>{"clientId":{{ settings.customer_account_client_id | json }},"shopDomain":{{ shop.permanent_domain | json }},"callbackPath":"/collections/shop","designMode":{% if request.design_mode %}true{% else %}false{% endif %}}</script>
+<template data-account-profile-template><details class="account-menu"><summary>Profile <span aria-hidden="true">⌄</span></summary><div class="account-menu-links"><span class="account-menu-identity" data-account-email hidden></span><a href="{{ routes.account_profile_url }}" target="_top">Profile</a><a href="{{ routes.account_logout_url }}" data-account-signout target="_top">Sign out</a></div></details></template>
+<template data-account-login-template><a class="account-fallback" data-account-login href="{{ routes.storefront_login_url }}" target="_top" rel="nofollow">Login</a></template>
+<span class="account-status" data-account-status role="status"></span>
+{% endif %}
+</div>
+{% endif %}

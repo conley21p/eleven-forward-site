@@ -1,0 +1,5 @@
+<ef-quantity class="quantity-control">
+<button type="button" data-quantity-step="-1" aria-label="Decrease quantity" aria-controls="{{ quantity_id }}">−</button>
+<input id="{{ quantity_id }}" type="number" name="{{ quantity_name }}" value="{{ quantity_value | default: 1 }}" min="{{ quantity_min | default: 1 }}" step="1" inputmode="numeric" required>
+<button type="button" data-quantity-step="1" aria-label="Increase quantity" aria-controls="{{ quantity_id }}">+</button>
+</ef-quantity>

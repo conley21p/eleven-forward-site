@@ -1,0 +1,18 @@
+{% assign is_band = false %}{% if product.id == settings.band_product.id %}{% assign is_band = true %}{% endif %}
+{% assign is_tee = false %}{% assign color = 'black' %}
+{% if product.id == settings.black_tee_product.id or product.id == settings.white_tee_product.id %}{% assign is_tee = true %}{% endif %}
+{% if product.id == settings.white_tee_product.id %}{% assign color = 'white' %}{% endif %}
+<section class="shop-product shop-shell{% if is_band %} band-product{% endif %}" data-product-detail>
+{% render 'product-gallery', product: product, is_tee: is_tee, color: color %}
+<div class="shop-product-copy">{% unless is_band %}<p class="eyebrow">Eleven Forward{% if is_tee %} / Unisex{% endif %}</p>{% endunless %}<h1>{{ product.title | escape }}</h1>
+{% if is_band %}{% render 'product-picker', picker_product: product, picker_mode: 'detail', picker_color: color, is_tee: is_tee %}{% endif %}<div class="product-description">{% if product.description != blank %}{{ product.description }}{% elsif is_tee %}<p>A shared spirit of resilience and belonging. A unisex Survival Club tee in {{ color }}.</p>{% else %}<p>P001 Sport Band. Designed to help athletes with an ostomy focus on what they love.</p>{% endif %}</div>
+{% if product.metafields.custom.imagery_approved.value != true %}<p class="concept-note">Concept imagery. Final product photography will be confirmed before sales open.</p>{% endif %}
+{% unless is_band %}{% render 'product-picker', picker_product: product, picker_mode: 'detail', picker_color: color, is_tee: is_tee %}{% endunless %}
+{% if cart.taxes_included %}<p class="purchase-note">Taxes included. Shipping calculated at checkout.</p>{% else %}<p class="purchase-note">Shipping and applicable taxes calculated at checkout.</p>{% endif %}
+<div class="product-information">
+{% if product.metafields.custom.size_guide != blank %}<details><summary>Size guide</summary>{{ product.metafields.custom.size_guide | metafield_tag }}</details>{% endif %}
+<details><summary>Materials &amp; care</summary>{% if product.metafields.custom.materials_care != blank %}{{ product.metafields.custom.materials_care | metafield_tag }}{% else %}<p>Materials and care details will be confirmed before sales open.</p>{% endif %}</details>
+<details><summary>Shipping &amp; returns</summary>{% if product.metafields.custom.shipping_returns != blank %}{{ product.metafields.custom.shipping_returns | metafield_tag }}{% else %}<p>Shipping and return details will be confirmed before sales open.</p>{% endif %}{% if shop.shipping_policy != blank %}<a href="{{ shop.shipping_policy.url }}">Shipping policy</a>{% endif %} {% if shop.refund_policy != blank %}<a href="{{ shop.refund_policy.url }}">Return policy</a>{% endif %}</details></div>
+</div></section>
+{% render 'product-recommendations' %}
+{% schema %}{"name":"Product","settings":[]}{% endschema %}

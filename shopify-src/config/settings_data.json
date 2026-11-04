@@ -1,0 +1,16 @@
+{
+  "current": {
+    "enable_purchasing": false,
+    "enable_newsletter": true,
+    "band_product": "p001-sport-band",
+    "black_tee_product": "survival-club-tee-black",
+    "white_tee_product": "survival-club-tee-white",
+    "band_men_sm_waist": "25\u201335",
+    "band_men_lxl_waist": "35\u201345",
+    "band_women_xss_waist": "24\u201329",
+    "band_women_ml_waist": "29\u201335",
+    "band_women_xlxxl_waist": "35\u201343",
+    "band_waist_estimates": true
+  },
+  "presets": {}
+}

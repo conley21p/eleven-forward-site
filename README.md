@@ -1,3 +1,22 @@
+# Eleven Forward Shopify storefront
+
+`shopify-src/` is the primary website source. The theme uses Shopify for the product catalog, customer accounts, and newsletter subscriptions. The prelaunch settings in `shopify-src/config/settings_data.json` keep purchasing off and enable the native newsletter form.
+
+```sh
+npm ci
+npm run test:shopify
+npm run build:account
+python3 scripts/build_shopify_theme.py --settings-file shopify-src/config/settings_data.json
+npm run check:shopify
+```
+
+The build produces `Eleven-Forward-Shop-v0.2.zip` and a `shopify-theme/` directory for upload. Upload to an unpublished theme first. Assign the band and tee products if needed and verify the store’s newsletter consent, sender, and privacy settings before collecting subscriptions. Store-specific account and product settings belong in Shopify.
+
+The previous standalone build remains available in `src/` and `dist/`. Its separate deployment instructions are in [DEPLOYMENT.md](DEPLOYMENT.md).
+
+<details>
+<summary>Original standalone site documentation</summary>
+
 # Eleven Forward website
 
 A static local review website for wearElevenForward.com. **Not published. Email signup is disabled. Policies are drafts.**
@@ -76,3 +95,5 @@ CSS and JavaScript references include content hashes so each release loads match
 ## Homepage scroll scenes
 
 P001 is a normal static hero with the branded full-band image and product-update CTA. It has no pinned scroll area, magnifier, or step indicators. Mission and Lived Experience retain their shorter scroll reveals, and section 03 retains its four-stage logo story. These scenes share one event-driven animation-frame queue and respect reduced motion.
+
+</details>

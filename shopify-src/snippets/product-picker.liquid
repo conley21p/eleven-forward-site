@@ -1,0 +1,48 @@
+{% assign band_layout = false %}{% if picker_mode == 'detail' and picker_product != blank and picker_product.id == settings.band_product.id %}{% assign band_layout = true %}{% endif %}
+{% assign picker_uid = section.id | append: '-' | append: picker_instance %}
+{% assign picker_id = 'ProductForm-' | append: picker_uid %}
+{% assign product_ready = false %}
+{% if settings.enable_purchasing and picker_product.metafields.custom.commerce_ready.value == true %}{% assign product_ready = true %}{% endif %}
+{% assign picker_default_variant = nil %}
+{% if product.id == picker_product.id and product.selected_variant != blank %}{% assign picker_default_variant = product.selected_variant %}{% else %}
+{% for size_variant in picker_product.variants %}{% assign size_name = size_variant.option1 | downcase %}{% if size_variant.available %}{% if size_name == 'l' or size_name == 'large' %}{% assign picker_default_variant = size_variant %}{% break %}{% endif %}{% endif %}{% endfor %}{% endif %}
+<ef-product-picker class="purchase-bar{% if band_layout %} band-config{% endif %}" data-mode="{{ picker_mode }}" data-color="{{ picker_color | default: 'black' }}" data-cart-url="{{ routes.cart_url }}" data-root="{{ routes.root_url }}">
+{% if band_layout %}<div class="purchase-price band-config-price" data-price aria-live="polite">{% if product_ready %}{{ picker_product.price | money }}{% else %}Price to be announced{% endif %}</div>{% endif %}
+{% if is_tee and hide_tee_guidance != true %}
+<fieldset class="purchase-control"><legend>Color</legend><div class="toggle-group">
+<button type="button" data-color-choice="black" aria-pressed="{% if picker_color == 'white' %}false{% else %}true{% endif %}"><span class="swatch swatch-black"></span>Black</button>
+<button type="button" data-color-choice="white" aria-pressed="{% if picker_color == 'white' %}true{% else %}false{% endif %}"><span class="swatch swatch-white"></span>White</button>
+</div></fieldset>
+<div class="purchase-control fit-control"><fieldset><legend>Sizing guidance · Unisex</legend><div class="toggle-group"><button type="button" data-fit="men" aria-pressed="true">Men’s</button><button type="button" data-fit="women" aria-pressed="false">Women’s</button></div></fieldset>
+<details class="size-guide"><summary>Size guide</summary><div data-guidance="men">{{ settings.mens_size_guide }}</div><div data-guidance="women" hidden>{{ settings.womens_size_guide }}</div><p>The garment is unisex. This choice changes guidance only.</p></details></div>
+<noscript><p>Unisex garment. Both sizing guides are available below. <a href="{% if picker_color == 'white' %}{{ settings.black_tee_product.url }}{% else %}{{ settings.white_tee_product.url }}{% endif %}">View the other color</a></p><div>{{ settings.mens_size_guide }}{{ settings.womens_size_guide }}</div></noscript>
+{% endif %}
+{% if picker_mode == 'detail' and picker_product != blank and picker_product.id == settings.band_product.id %}<fieldset class="purchase-control band-fit-control"><legend>Fit</legend><div class="toggle-group"><button type="button" data-band-gender="men" aria-pressed="true">Men’s</button><button type="button" data-band-gender="women" aria-pressed="false">Women’s</button></div></fieldset>{% endif %}
+{% if picker_product != blank %}
+{% form 'product', picker_product, id: picker_id, class: 'purchase-form' %}
+<input type="hidden" name="return_to" value="{{ routes.cart_url }}">
+<div class="purchase-control size-control"><div class="size-label-row"><label for="Variant-{{ picker_uid }}">Size</label>{% if band_layout %}<button class="band-size-link" type="button" data-band-guide aria-haspopup="dialog" aria-controls="BandGuide-{{ picker_uid }}">Size guide</button>{% endif %}</div>
+<select id="Variant-{{ picker_uid }}" name="id" data-variant required{% if picker_product.has_only_default_variant and product_ready == false %} disabled{% endif %}>
+<option value="">{% if picker_product.has_only_default_variant and product_ready == false %}Options coming soon{% else %}Choose size{% endif %}</option>
+{% unless picker_product.has_only_default_variant and product_ready == false %}
+{% for variant in picker_product.variants %}<option value="{{ variant.id }}"{% unless variant.available %} disabled{% endunless %}{% if picker_default_variant.id == variant.id %} selected{% endif %}>{{ variant.title | escape }}{% unless variant.available %} — Sold out{% endunless %}</option>{% endfor %}
+{% endunless %}</select></div>
+{% if picker_mode == 'detail' or picker_mode == 'quick' %}<div class="purchase-control"><label for="Quantity-{{ picker_uid }}">Quantity</label>{% assign quantity_id = 'Quantity-' | append: picker_uid %}{% render 'quantity-control', quantity_id: quantity_id, quantity_name: 'quantity', quantity_value: 1, quantity_min: 1 %}</div>{% else %}<input name="quantity" type="hidden" value="1">{% endif %}
+{% if picker_mode == 'story' %}<div class="story-purchase-action">{% endif %}{% unless band_layout %}<div class="purchase-price" data-price aria-live="polite">{% if product_ready %}{% if picker_product.price_varies %}From {% endif %}{{ picker_product.price | money_with_currency }}{% else %}Price to be announced{% endif %}</div>{% endunless %}
+<button class="submit add-to-cart" type="submit" data-add{% unless product_ready and picker_product.available %} disabled{% endunless %}>{% if product_ready %}{% if picker_product.available %}Add to cart{% else %}Sold out{% endif %}{% else %}Coming soon{% endif %}</button>
+{% if picker_mode == 'story' %}</div>{% endif %}
+{% if band_layout and settings.band_waist_estimates != false %}<p class="purchase-note band-waist-note">Sample sizing</p>{% endif %}
+{% if picker_mode == 'detail' and product_ready %}<div data-accelerated hidden>{{ form | payment_button }}</div>{% endif %}
+{{ form.errors | default_errors }}
+{% endform %}
+{% else %}
+<div class="purchase-form" data-placeholder><div class="purchase-control size-control"><div class="size-label-row"><label for="Variant-{{ picker_uid }}">Size</label>{% if band_layout %}<button class="band-size-link" type="button" data-band-guide aria-haspopup="dialog" aria-controls="BandGuide-{{ picker_uid }}">Size guide</button>{% endif %}</div><select id="Variant-{{ picker_uid }}" data-variant disabled><option value="">Sizes coming soon</option></select></div>{% if picker_mode == 'story' %}<div class="story-purchase-action">{% endif %}<span class="purchase-price" data-price>Price to be announced</span><button class="submit add-to-cart" data-add disabled>Coming soon</button>{% if picker_mode == 'story' %}</div>{% endif %}</div>
+{% endif %}
+{% if settings.enable_purchasing == false and settings.enable_newsletter %}
+<a class="text-link" href="#updates-footer">Join the newsletter <span class="arrow" aria-hidden="true">↓</span></a>
+{% endif %}
+<p class="purchase-status" data-purchase-status role="status" aria-live="polite"></p>
+{% if band_layout == false and picker_product != blank and picker_product.id == settings.band_product.id and settings.band_waist_estimates != false %}<p class="purchase-note band-waist-note">Estimated waist ranges.</p>{% endif %}
+{% if band_layout %}{% render 'band-size-guide', guide_uid: picker_uid, guide_product: picker_product %}{% endif %}
+<script type="application/json" data-picker-products>{"current":{% render 'product-data', data_product: picker_product %},"black":{% render 'product-data', data_product: settings.black_tee_product %},"white":{% render 'product-data', data_product: settings.white_tee_product %}}</script>
+</ef-product-picker>

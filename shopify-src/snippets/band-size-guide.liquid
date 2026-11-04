@@ -1,0 +1,7 @@
+<dialog class="band-guide-sheet" id="BandGuide-{{ guide_uid }}" aria-labelledby="BandGuideTitle-{{ guide_uid }}" data-band-guide-dialog>
+<div class="sheet-handle" aria-hidden="true"></div><header class="band-guide-header"><h2 id="BandGuideTitle-{{ guide_uid }}">Size guide</h2><button type="button" data-band-guide-close aria-label="Close size guide">×</button></header>
+<p class="band-guide-product" data-band-guide-product>{{ guide_product.title | escape }}</p>
+<table><thead><tr><th scope="col">Size</th><th scope="col">Waist</th></tr></thead><tbody data-band-guide-rows></tbody></table>
+<p class="band-measure-note">Measure around your waist where the band will sit.</p>{% if settings.band_waist_estimates != false %}<p class="band-guide-sample">Sample sizing</p>{% endif %}
+</dialog>
+<noscript><details><summary>Size guide</summary><p>Men’s: S/M {{ settings.band_men_sm_waist | escape }} in; L/XL {{ settings.band_men_lxl_waist | escape }} in.</p><p>Women’s: XS/S {{ settings.band_women_xss_waist | escape }} in; M/L {{ settings.band_women_ml_waist | escape }} in; XL/XXL {{ settings.band_women_xlxxl_waist | escape }} in.</p><p>Sample sizing. Measure around your waist where the band will sit.</p></details></noscript>

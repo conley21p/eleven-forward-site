@@ -1,0 +1,36 @@
+{% assign all_items_ready = true %}{% for item in cart.items %}{% if item.product.metafields.custom.commerce_ready.value != true %}{% assign all_items_ready = false %}{% endif %}{% endfor %}
+<section class="shop-shell cart-page" data-cart-page>
+<header class="cart-heading"><div><p class="eyebrow">Eleven Forward</p><h1>Your cart.</h1></div></header>
+{% if cart.empty? %}<div class="cart-empty"><h2>A little room for what’s next.</h2><p>Your cart is empty.</p><a class="submit" href="{{ routes.root_url }}collections/shop">Explore the shop <span aria-hidden="true">→</span></a></div>
+{% else %}<form data-cart-form class="cart-layout" action="{{ routes.cart_url }}" method="post">
+<div class="cart-items"><div class="cart-column-headings" aria-hidden="true"><span>Product</span><span>Total</span></div>
+{% for item in cart.items %}<article class="bag-item cart-item" aria-label="{{ item.product.title | escape }}">
+<a class="cart-item-image" href="{{ item.url }}" tabindex="-1" aria-hidden="true">{% render 'cart-line-image', item: item %}</a>
+<div class="cart-item-details"><a class="cart-item-title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+{% unless item.variant.title == 'Default Title' %}<p class="cart-item-variant">{% if item.product.options.size == 1 %}{{ item.product.options.first }}: {% endif %}{{ item.variant.title | escape }}</p>{% endunless %}
+{% for property in item.properties %}{% assign first_character = property.first | slice: 0 %}{% if property.last != blank and first_character != '_' %}<p class="cart-item-property">{{ property.first | escape }}: {{ property.last | escape }}</p>{% endif %}{% endfor %}
+<p class="cart-unit-price">{{ item.final_price | money_with_currency }} <span>each</span></p>
+<div class="cart-item-controls"><div class="cart-quantity"><label for="CartQuantity-{{ forloop.index }}">Quantity</label>{% assign quantity_id = 'CartQuantity-' | append: forloop.index %}{% render 'quantity-control', quantity_id: quantity_id, quantity_name: 'updates[]', quantity_value: item.quantity, quantity_min: 0 %}</div><a class="cart-remove" href="{{ item.url_to_remove }}">Remove</a></div>
+{% for discount in item.line_level_discount_allocations %}<p class="cart-discount">{{ discount.discount_application.title | escape }} (−{{ discount.amount | money }})</p>{% endfor %}</div>
+<p class="cart-line-total">{{ item.final_line_price | money_with_currency }}</p>
+</article>{% endfor %}
+<button type="submit" name="update" hidden data-cart-update>Update cart</button>
+<noscript><button class="submit button-secondary cart-update" type="submit" name="update">Update quantities</button></noscript>
+<p class="cart-save-status" role="status" aria-live="polite"></p></div>
+<div class="cart-summary-column"><aside class="cart-summary" aria-labelledby="cart-summary-title"><h2 id="cart-summary-title">Order summary</h2>
+{% for discount in cart.cart_level_discount_applications %}<div class="cart-summary-row cart-discount"><span>{{ discount.title | escape }}</span><span>−{{ discount.total_allocated_amount | money }}</span></div>{% endfor %}
+<div class="cart-summary-row cart-subtotal"><span>Subtotal</span><strong>{{ cart.total_price | money_with_currency }}</strong></div>
+<div class="cart-summary-row cart-sales-tax"><span>Sales Tax</span><span>{% if cart.taxes_included %}Included{% else %}Calculated at checkout{% endif %}</span></div>
+<p class="cart-tax-note">Shipping calculated at checkout.</p>
+{% if settings.enable_purchasing and all_items_ready %}<button class="submit cart-checkout" type="submit" name="checkout">Checkout <span aria-hidden="true">→</span></button>
+{% if additional_checkout_buttons %}
+<div class="additional-checkout-buttons--vertical cart-express-checkout">
+{{ content_for_additional_checkout_buttons }}
+</div>
+{% endif %}
+{% endif %}
+{% unless all_items_ready %}<p class="cart-unavailable" role="status">One or more items are not available for purchase yet. Remove them to continue.</p>{% endunless %}
+</aside>
+<a class="submit button-secondary cart-update" href="{{ routes.root_url }}collections/shop">Continue shopping</a>
+</div></form>{% endif %}</section>
+{% schema %}{"name":"Cart","settings":[]}{% endschema %}

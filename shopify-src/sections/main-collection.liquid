@@ -1,0 +1,15 @@
+{% if collection.handle == 'frontpage' %}
+<div hidden data-catalog-redirect="{{ routes.root_url }}collections/shop"></div>
+<noscript><p><a href="{{ routes.root_url }}collections/shop">View the shop catalog</a></p></noscript>
+{% endif %}
+{% if collection.handle == 'shop' or collection.handle == 'frontpage' %}
+{% render 'shop-catalog' %}
+{% else %}
+<section class="shop-shell"><h1>{{ collection.title | escape }}</h1><div>{{ collection.description }}</div>{% paginate collection.products by 24 %}<div class="shop-grid">{% for item in collection.products %}{% render 'product-card', card_product: item %}{% else %}<p>Products coming soon.</p>{% endfor %}</div>{{ paginate | default_pagination }}{% endpaginate %}</section>
+{% endif %}
+{% schema %}
+{
+  "name": "Collection",
+  "settings": []
+}
+{% endschema %}

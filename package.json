@@ -1,0 +1,27 @@
+{
+  "name": "eleven-forward-theme",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "test:shopify": "node --test tests/shopify-commerce.test.cjs tests/shopify-account.test.mjs",
+    "preview:shopify": "node tests/shopify-preview.cjs",
+    "build:shopify": "npm run build:account && python3 scripts/build_shopify_theme.py",
+    "check:shopify": "node scripts/check_shopify_theme.cjs",
+    "shopify:cli": "npm exec --yes --package=@shopify/cli@5.0.0 -- shopify",
+    "build:account": "esbuild shopify-client/customer-account.mjs --bundle --format=esm --target=es2022 --minify --outfile=shopify-src/assets/customer-account.js",
+    "shopify:doctor": "node scripts/shopify-doctor.cjs",
+    "shopify:store:auth": "npm run --silent shopify:cli -- store auth --store wear-eleven-forward-preview.myshopify.com --scopes read_products,read_inventory,read_locations",
+    "shopify:store:check": "npm run --silent shopify:cli -- store execute --store wear-eleven-forward-preview.myshopify.com --version 2026-10 --query-file scripts/shopify-store-check.graphql --no-input --json"
+  },
+  "devDependencies": {
+    "@shopify/theme-check-node": "3.31.0",
+    "esbuild": "^0.25.12",
+    "jsdom": "29.1.1",
+    "liquidjs": "10.30.0"
+  },
+  "dependencies": {
+    "oidc-client-ts": "^3.3.0"
+  }
+}

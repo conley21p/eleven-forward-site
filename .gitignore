@@ -9,3 +9,8 @@ __pycache__/
 
 # Duplicate review copy; production source is in originals/.
 /review/founder-cutout-upscaled-review.png
+
+node_modules/
+
+# Generated Shopify bundle, including store-specific settings.
+/shopify-theme/

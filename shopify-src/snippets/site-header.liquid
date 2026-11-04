@@ -1,0 +1,6 @@
+<a class="skip" href="#main">Skip to content</a><div class="notice">Life beyond surgery. <b>Always forward.</b></div><header class="header"><nav class="nav" aria-label="Main navigation"><a class="logo" href="{{ routes.root_url }}" aria-label="Eleven Forward home"><img src="{{ 'logo-dark.png' | asset_url }}" width="580" height="96" alt="Eleven Forward"></a>{% if cart.item_count > 0 %}
+<a class="mobile-shop-shortcut" href="{{ routes.cart_url }}">Cart ({{ cart.item_count }})</a>
+{% else %}
+<a class="mobile-shop-shortcut" href="{{ routes.root_url }}collections/shop">Shop</a>
+{% endif %}
+<button class="menu" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span class="menu-icon" aria-hidden="true"></span></button><div class="nav-links" id="nav-links"><a href="{% if settings.band_product != blank %}{{ settings.band_product.url }}{% else %}{{ routes.root_url }}products/p001-sport-band{% endif %}">P001 Sports Band</a><a href="{{ routes.root_url }}collections/shop">Shop</a><a href="{{ routes.root_url }}pages/survival-club">Survival Club</a><a href="{{ routes.cart_url }}" data-cart-count>Cart ({{ cart.item_count }})</a></div>{% render 'account-entry' %}</nav></header>

@@ -1,0 +1,20 @@
+{% if settings.enable_newsletter %}
+{% assign newsletter_key = placement | default: 'home' %}
+{% assign newsletter_form_id = 'Newsletter-' | append: newsletter_key %}
+<section class="signup{% if newsletter_key == 'footer' %} signup-compact{% endif %}" id="updates-{{ newsletter_key }}" aria-labelledby="{{ newsletter_form_id }}-title">
+<div class="signup-copy"><h2 id="{{ newsletter_form_id }}-title">{% if newsletter_key == 'footer' %}Stay in the loop.{% else %}Keep moving<br>forward.{% endif %}</h2><p>Product launches and stories from Eleven Forward.</p></div>
+<div class="signup-form">
+{% form 'customer', id: newsletter_form_id %}
+<input type="hidden" name="contact[tags]" value="newsletter,eleven-forward">
+<input type="hidden" name="return_to" value="{{ request.path }}?newsletter_source={{ newsletter_key }}#{{ newsletter_form_id }}">
+{% if form.posted_successfully? %}
+<p class="form-status" role="status" tabindex="-1">Check your email to confirm your subscription.</p>
+{% else %}
+{% if form.errors %}<div id="{{ newsletter_form_id }}-error" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+<label class="email-label" for="{{ newsletter_form_id }}-email">Email address</label>
+<div class="email-row"><input id="{{ newsletter_form_id }}-email" name="contact[email]" type="email" autocomplete="email" placeholder="Your email address" required maxlength="254" value="{{ form.email | escape }}"{% if form.errors %} aria-invalid="true" aria-describedby="{{ newsletter_form_id }}-error"{% endif %}><button class="submit" type="submit">Subscribe</button></div>
+<label class="consent" for="{{ newsletter_form_id }}-consent"><input id="{{ newsletter_form_id }}-consent" type="checkbox" required><span>Email me product launches and Eleven Forward updates. I can unsubscribe at any time.{% if shop.privacy_policy != blank %} Read our <a href="{{ shop.privacy_policy.url }}">Privacy Policy</a>.{% endif %}</span></label>
+{% endif %}
+{% endform %}
+</div></section>
+{% endif %}
