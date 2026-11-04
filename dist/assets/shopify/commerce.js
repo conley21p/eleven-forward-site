@@ -19,25 +19,27 @@ class ProductPicker extends HTMLElement {
   this.querySelectorAll('[data-fit]').forEach(button => on(button, 'click', () => {
    this.querySelectorAll('[data-fit]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
    this.querySelectorAll('[data-guidance]').forEach(panel => { panel.hidden = panel.dataset.guidance !== button.dataset.fit; });
-   const guide = this.querySelector('.size-guide'); if (guide) guide.open = true;
    // Sizing guidance never changes product, selected size, quantity or price.
   }));
   on(this.form, 'submit', event => this.submit(event));
   this.querySelectorAll('[data-band-gender]').forEach(button => on(button, 'click', () => this.setBandGender(button.dataset.bandGender)));
   if (this.current?.band_sizing) this.setBandGender(this.bandGenderFor(this.variant) || 'men', true);
-  on(this.querySelector('[data-band-guide]'), 'click', () => {
-   const dialog = this.querySelector('[data-band-guide-dialog]');
-   if (typeof dialog?.showModal !== 'function') return;
-   this.renderBandGuide(); dialog.showModal(); document.documentElement.classList.add('band-guide-open');
+  this.guideOpener = this.querySelector('[data-band-guide], [data-size-guide-open]');
+  this.guideDialog = this.querySelector('[data-band-guide-dialog], [data-size-guide-dialog]');
+  on(this.guideOpener, 'click', () => {
+   if (typeof this.guideDialog?.showModal !== 'function') return;
+   this.renderBandGuide();
+   this.guideDialog.showModal();
+   document.documentElement.classList.add('band-guide-open');
   });
-  on(this.querySelector('[data-band-guide-close]'), 'click', () => this.querySelector('[data-band-guide-dialog]').close());
-  on(this.querySelector('[data-band-guide-dialog]'), 'close', () => {
+  on(this.querySelector('[data-band-guide-close], [data-size-guide-close]'), 'click', () => this.guideDialog.close());
+  on(this.guideDialog, 'close', () => {
    document.documentElement.classList.remove('band-guide-open');
-   this.querySelector('[data-band-guide]')?.focus({preventScroll:true});
+   this.guideOpener?.focus({preventScroll:true});
   });
   this.update();
  }
- disconnectedCallback() { if (this.querySelector('[data-band-guide-dialog]')?.open) { this.querySelector('[data-band-guide-dialog]').close(); document.documentElement.classList.remove('band-guide-open'); } this.controller?.abort(); this.controller = null; this.colorRequest = (this.colorRequest || 0) + 1; }
+ disconnectedCallback() { if (this.guideDialog?.open) { this.guideDialog.close(); document.documentElement.classList.remove('band-guide-open'); } this.controller?.abort(); this.controller = null; this.colorRequest = (this.colorRequest || 0) + 1; }
  get variant() { return this.current?.product?.variants?.find(v => String(v.id) === this.select.value); }
  update() {
   const variant = this.variant;
@@ -47,7 +49,7 @@ class ProductPicker extends HTMLElement {
   this.querySelectorAll('[data-color-choice], [data-fit]').forEach(button => { button.disabled = this.pending || this.changingColor; });
   this.querySelectorAll('[data-band-gender]').forEach(button => { button.disabled = this.pending; });
   this.closest('ef-quick-shop')?.querySelectorAll('[data-quick-gender]').forEach(button => { button.disabled = this.pending; });
-  this.querySelectorAll('ef-quantity').forEach(control => control.toggleAttribute('disabled', this.pending));
+  this.querySelectorAll('ef-quantity').forEach(control => control.toggleAttribute('disabled', this.pending || this.changingColor));
   if (this.form) this.form.setAttribute('aria-busy', String(this.pending));
   this.add.setAttribute('aria-busy', String(this.pending));
   this.add.textContent = this.pending ? 'Adding…' : !ready ? 'Coming soon' : variant && !variant.available ? 'Sold out' : 'Add to cart';
@@ -123,16 +125,60 @@ class ProductPicker extends HTMLElement {
   history.replaceState(null, '', url);
   this.dispatchEvent(new CustomEvent('variant:change', {bubbles:true,detail:{variant:this.variant || null}}));
  }
+ async changeDetailColor(next, match) {
+  if (!next?.url) {
+   this.status.textContent = 'This color is not available yet.';
+   return;
+  }
+  const destination = new URL(next.url, location.origin);
+  if (destination.origin !== location.origin) return;
+  if (match?.available) destination.searchParams.set('variant', match.id);
+  const detail = this.closest('[data-product-detail]');
+  const guidance = this.querySelector('[data-fit][aria-pressed="true"]')?.dataset.fit;
+  const quantity = this.querySelector('input[name="quantity"]')?.value;
+  this.changingColor = true;
+  this.status.textContent = 'Loading color…';
+  this.update();
+  try {
+   const response = await fetch(destination, {signal:this.controller.signal});
+   if (!response.ok) throw new Error('Unable to load product');
+   const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+   const replacement = page.querySelector('main [data-product-detail]');
+   const nextPicker = replacement?.querySelector('ef-product-picker');
+   if (!nextPicker || nextPicker.dataset.color === this.color) throw new Error('Unexpected product');
+   if (!this.isConnected) return;
+   const restoreFocus = this.contains(document.activeElement) || document.activeElement === document.body;
+   detail.replaceWith(replacement);
+   initGalleries(replacement.parentElement);
+   nextPicker.querySelector(`[data-fit="${guidance}"]`)?.click();
+   nextPicker.select.value = match?.available ? String(match.id) : '';
+   const nextQuantity = nextPicker.querySelector('input[name="quantity"]');
+   if (nextQuantity && quantity) {
+    nextQuantity.value = quantity;
+    nextQuantity.dispatchEvent(new Event('input', {bubbles:true}));
+   }
+   document.title = page.title || document.title;
+   history.replaceState(history.state, '', destination);
+   nextPicker.update();
+   nextPicker.status.textContent = `${nextPicker.color === 'white' ? 'White' : 'Black'} selected.`;
+   if (restoreFocus) nextPicker.querySelector('[data-color-choice][aria-pressed="true"]')?.focus({preventScroll:true});
+  } catch {
+   if (this.isConnected) this.status.textContent = 'That color could not load. Select it again to retry.';
+  } finally {
+   if (this.isConnected) {
+    this.changingColor = false;
+    this.update();
+   }
+  }
+ }
  async changeColor(color) {
   if (color === this.color || this.pending || this.changingColor) return;
   const next = this.products[color];
   const size = this.variant?.option1;
   const match = next?.product?.variants?.find(v => v.option1 === size);
   if (this.dataset.mode === 'detail') {
-   if (!next?.url) { this.status.textContent = 'This color is not available yet.'; return; }
-   const destination = new URL(next.url, location.origin);
-   if (match) destination.searchParams.set('variant', match.id);
-   location.assign(destination.href); return;
+   await this.changeDetailColor(next, match);
+   return;
   }
   const story = this.closest('[data-commerce-story]');
   const template = story?.querySelector(`[data-color-media="${color}"]`);

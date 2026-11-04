@@ -82,8 +82,11 @@ async function render(url, {staticOrigin} = {}) {
  if (staticOrigin) {
   context.settings.enable_purchasing = false;
   context.settings.enable_newsletter = true;
-  context.settings.mens_size_guide = '';
-  context.settings.womens_size_guide = '';
+  const settingsSchema = JSON.parse(fs.readFileSync(path.join(source,'config/settings_schema.json'),'utf8'));
+  const themeSettings = settingsSchema.flatMap(group => group.settings || []);
+  for (const key of ['mens_size_guide', 'womens_size_guide']) {
+   context.settings[key] = approvedSettings[key] || themeSettings.find(setting => setting.id === key)?.default || '';
+  }
   context.shop = {
    customer_accounts_enabled:false,
    name:'Eleven Forward',

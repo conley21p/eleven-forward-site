@@ -85,3 +85,6 @@ html:not(.js) [data-band-guide]{display:none}
 
 .cart-sales-tax{margin-top:6px;color:#5e6259}
 .cart-sales-tax span:last-child{text-align:right}
+
+.fit-control [data-size-guide-open]{min-height:44px;padding:0;border:0;background:transparent;color:var(--carbon);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+html:not(.js) [data-size-guide-open]{display:none}

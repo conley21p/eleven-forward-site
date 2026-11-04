@@ -482,3 +482,33 @@ test('cart quantity changes submit native updates once and recover on history re
  dom.window.dispatchEvent(new dom.window.Event('pageshow'));assert.equal(input.readOnly,false);
  input.value='2';input.dispatchEvent(new dom.window.Event('change',{bubbles:true}));assert.equal(submissions.length,2);assert.equal(submissions[1][0],'2');dom.window.close();
 });
+
+test('tee fit keeps the guide closed and detail color changes preserve the document', async () => {
+ const {dom, picker} = await setup('/products/survival-club-tee-black?variant=203');
+ const {document} = dom.window;
+ const dialog = picker.querySelector('[data-size-guide-dialog]');
+ dialog.showModal = () => dialog.setAttribute('open', '');
+ picker.querySelector('[data-fit="women"]').click();
+ assert.equal(dialog.open, false);
+ picker.querySelector('[data-size-guide-open]').click();
+ assert.equal(dialog.open, true);
+ assert.equal(dialog.querySelector('[data-guidance="women"]').hidden, false);
+ dialog.close = () => dialog.removeAttribute('open');
+ dialog.close();
+ const header = document.querySelector('.header');
+ let requested;
+ dom.window.fetch = async url => {
+  requested = url.href;
+  return {ok:true, text:() => render(url)};
+ };
+ await picker.changeColor('white');
+ const updated = document.querySelector('ef-product-picker');
+ assert.match(requested, /survival-club-tee-white\?variant=303$/);
+ assert.equal(document.querySelector('.header'), header);
+ assert.match(document.querySelector('h1').textContent, /White/);
+ assert.equal(updated.variant.id, 303);
+ assert.equal(updated.querySelector('[data-fit="women"]').getAttribute('aria-pressed'), 'true');
+ assert.equal(updated.querySelector('[data-size-guide-dialog]').open, false);
+ assert.equal(dom.window.location.pathname, '/products/survival-club-tee-white');
+ dom.window.close();
+});

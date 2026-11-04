@@ -51,7 +51,7 @@ shopify-accelerated-checkout{--shopify-accelerated-checkout-button-block-size:46
 @media(max-width:900px){.nav{gap:18px}.signup-compact{grid-template-columns:1fr;gap:12px}}
 .mobile-shop-shortcut{display:none}
 @media(max-width:640px){
- .nav .mobile-shop-shortcut{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-left:auto;font-size:12px;white-space:nowrap;text-decoration:none}
+ .nav .mobile-shop-shortcut{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;margin-left:auto;padding:0 12px;border:1px solid #a5aa98;border-radius:var(--control-radius);background:var(--chalk);color:var(--carbon);box-shadow:var(--control-neutral-shadow);font-size:12px;white-space:nowrap;text-decoration:none}
  .nav .menu{margin-left:0}
  .nav-links .account-entry{display:block;font-size:12px}
  .nav-links .account-fallback{justify-content:flex-start}

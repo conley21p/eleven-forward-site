@@ -14,7 +14,16 @@
 <button type="button" data-color-choice="white" aria-pressed="{% if picker_color == 'white' %}true{% else %}false{% endif %}"><span class="swatch swatch-white"></span>White</button>
 </div></fieldset>
 <div class="purchase-control fit-control"><fieldset><legend>Sizing guidance · Unisex</legend><div class="toggle-group"><button type="button" data-fit="men" aria-pressed="true">Men’s</button><button type="button" data-fit="women" aria-pressed="false">Women’s</button></div></fieldset>
-<details class="size-guide"><summary>Size guide</summary><div data-guidance="men">{{ settings.mens_size_guide }}</div><div data-guidance="women" hidden>{{ settings.womens_size_guide }}</div><p>The garment is unisex. This choice changes guidance only.</p></details></div>
+{% if picker_mode == 'detail' %}
+<button class="band-size-link" type="button" data-size-guide-open aria-haspopup="dialog" aria-controls="TeeGuide-{{ picker_uid }}">Size guide</button>
+<dialog class="band-guide-sheet" id="TeeGuide-{{ picker_uid }}" aria-labelledby="TeeGuideTitle-{{ picker_uid }}" data-size-guide-dialog>
+<div class="sheet-handle" aria-hidden="true"></div>
+<header class="band-guide-header"><h2 id="TeeGuideTitle-{{ picker_uid }}">Size guide</h2><button type="button" data-size-guide-close aria-label="Close size guide">×</button></header>
+<div data-guidance="men">{{ settings.mens_size_guide }}</div><div data-guidance="women" hidden>{{ settings.womens_size_guide }}</div><p>The garment is unisex. This choice changes guidance only.</p>
+</dialog>
+{% else %}
+<details class="size-guide"><summary>Size guide</summary><div data-guidance="men">{{ settings.mens_size_guide }}</div><div data-guidance="women" hidden>{{ settings.womens_size_guide }}</div><p>The garment is unisex. This choice changes guidance only.</p></details>
+{% endif %}</div>
 <noscript><p>Unisex garment. Both sizing guides are available below. <a href="{% if picker_color == 'white' %}{{ settings.black_tee_product.url }}{% else %}{{ settings.white_tee_product.url }}{% endif %}">View the other color</a></p><div>{{ settings.mens_size_guide }}{{ settings.womens_size_guide }}</div></noscript>
 {% endif %}
 {% if picker_mode == 'detail' and picker_product != blank and picker_product.id == settings.band_product.id %}<fieldset class="purchase-control band-fit-control"><legend>Fit</legend><div class="toggle-group"><button type="button" data-band-gender="men" aria-pressed="true">Men’s</button><button type="button" data-band-gender="women" aria-pressed="false">Women’s</button></div></fieldset>{% endif %}
