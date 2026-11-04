@@ -12,7 +12,9 @@ npm run check:shopify
 
 The build produces `Eleven-Forward-Shop-v0.2.zip` and a `shopify-theme/` directory for upload. Upload to an unpublished theme first. Assign the band and tee products if needed and verify the store’s newsletter consent, sender, and privacy settings before collecting subscriptions. Store-specific account and product settings belong in Shopify.
 
-The previous standalone build remains available in `src/` and `dist/`. Its separate deployment instructions are in [DEPLOYMENT.md](DEPLOYMENT.md).
+Run `npm run build:site` to build the standalone site in `dist/`. The home page, Survival Club, catalog, and product detail pages render from the same Shopify templates and assets, with the standalone site's existing Web3Forms configuration and launch safeguards. Shopify-hosted accounts and checkout require Shopify. See [DEPLOYMENT.md](DEPLOYMENT.md) for publishing the standalone files.
+
+The original static renderer remains in `scripts/build.py` for the policy pages, signup configuration, and legacy review.
 
 <details>
 <summary>Original standalone site documentation</summary>

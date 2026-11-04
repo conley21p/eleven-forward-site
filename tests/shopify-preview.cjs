@@ -28,7 +28,7 @@ engine.registerFilter('asset_url',name=>'/assets/'+name);
 engine.registerFilter('money_with_currency',cents=>'$'+(Number(cents)/100).toFixed(2)+' USD');
 engine.registerFilter('money',cents=>'$'+(Number(cents)/100).toFixed(2));
 engine.registerFilter('image_url',image=>typeof image==='string'?image:image?.src || '');
-engine.registerFilter('image_tag',src=>`<img src="${src}" width="1200" height="1200" alt="Test product image">`);
+engine.registerFilter('image_tag',src=>`<img src="${src}" width="1200" height="1200" alt="">`);
 engine.registerFilter('metafield_tag',v=>`<p>${v?.value || ''}</p>`);
 engine.registerFilter('payment_button',()=>'<button type="button" data-test-accelerated>Buy it now</button>');
 engine.registerFilter('stylesheet_tag',url=>`<link rel="stylesheet" href="${url}">`);
@@ -53,13 +53,22 @@ if(require.main===module && process.env.EF_PREVIEW_CART){
   if(variant)cartItems.push({product,title:product.title,variant,image:product.featured_image,quantity,final_price:variant.price,final_line_price:variant.price*quantity,url:product.url,properties:[],url_to_remove:'/cart?remove='+variant.id});
  }
 }
-async function render(url) {
+async function render(url, {staticOrigin} = {}) {
  syncSources();
  const detail=products.find(p=>p.url===url.pathname);
  if (detail) detail.selected_variant=detail.variants.find(v=>String(v.id)===url.searchParams.get('variant'));
  const unready=url.searchParams.has('unready'),unconnected=url.searchParams.has('unconnected');
  const previewProducts=products.map(p=>({...p,...(url.searchParams.has('no_product_images')?{images:[],featured_image:null}:{}),metafields:{custom:{...p.metafields.custom,commerce_ready:{value:!unready}}}}));
  const approvedSettings=JSON.parse(fs.readFileSync(path.join(source,'config/settings_data.json'),'utf8')).current || {};
+ if (staticOrigin) {
+  for (const product of previewProducts) {
+   product.description = '';
+   product.variants = product.variants.map(variant => ({...variant, available:true, price:0}));
+   product.price = 0;
+   delete product.metafields.custom.materials_care;
+   delete product.metafields.custom.shipping_returns;
+  }
+ }
  const bandRanges=Object.fromEntries(Object.entries(approvedSettings).filter(([key])=>(/^band_.*_waist$/.test(key) || key === 'band_waist_estimates')));
  const renderedCartItems=url.searchParams.has('cart_fixture')?previewProducts.map(product=>({product,variant:product.variants[0],image:product.featured_image,quantity:1,final_price:product.price,final_line_price:product.price,url:product.url,properties:[],url_to_remove:'/cart?remove='+product.variants[0].id})):cartItems;
  const context={customer:url.searchParams.get('state')==='signed-in'?{id:'local-preview-customer'}:null,settings:{...bandRanges,enable_purchasing:url.searchParams.has('prelaunch')?approvedSettings.enable_purchasing:true,enable_newsletter:!url.searchParams.has('newsletter_off')&&(!url.searchParams.has('prelaunch')||approvedSettings.enable_newsletter),band_product:unconnected?null:previewProducts[0],black_tee_product:unconnected?null:previewProducts[1],white_tee_product:unconnected?null:previewProducts[2],mens_size_guide:'<p>Fixture men’s measurement guide.</p>',womens_size_guide:'<p>Fixture women’s measurement guide.</p>'},
@@ -70,6 +79,19 @@ async function render(url) {
  collection:{handle:url.pathname==='/collections/frontpage'?'frontpage':'shop',title:'Shop',description:'',products:previewProducts},
  cart:{'empty?':renderedCartItems.length===0,item_count:renderedCartItems.reduce((n,x)=>n+x.quantity,0),items:renderedCartItems,total_price:renderedCartItems.reduce((n,x)=>n+x.final_line_price,0),taxes_included:false},
  section:{id:'local-test',settings:{heading:'Join the\nMovement'}},template:{suffix:url.pathname.includes('survival-club')?'survival-club':''}};
+ if (staticOrigin) {
+  context.settings.enable_purchasing = false;
+  context.settings.enable_newsletter = true;
+  context.settings.mens_size_guide = '';
+  context.settings.womens_size_guide = '';
+  context.shop = {
+   customer_accounts_enabled:false,
+   name:'Eleven Forward',
+   privacy_policy:{url:'/privacy/'},
+   terms_of_service:{url:'/terms/'},
+  };
+  context.canonical_url = new URL(url.pathname === '/' ? '/' : url.pathname + '/', staticOrigin).href;
+ }
  if(url.pathname==='/account'){
   const signedIn=url.searchParams.get('state')==='signed-in';
   const status=url.searchParams.get('subscription');

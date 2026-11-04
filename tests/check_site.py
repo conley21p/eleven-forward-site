@@ -18,6 +18,26 @@ for file in (ROOT/'dist').rglob('*.html'):
    assert target.exists(),f'Broken local link {ref} in {file}'
    if anchor:
     linked=Page();linked.feed(target.read_text());assert anchor in linked.ids,f'Missing anchor {ref}'
+with tempfile.TemporaryDirectory() as temp:
+ c=json.loads((ROOT/'src/config.json').read_text());c['signupEnabled']=True
+ config=Path(temp)/'bad.json';config.write_text(json.dumps(c))
+ result=subprocess.run([sys.executable,str(ROOT/'scripts/build.py'),'--config',str(config),'--out',str(Path(temp)/'site')],capture_output=True,text=True)
+ assert result.returncode!=0 and 'Launch blocked' in result.stderr
+if 'id="Newsletter-footer"' in (ROOT/'dist/index.html').read_text():
+ for route in ['index.html', 'survival-club/index.html', 'collections/shop/index.html']:
+  page=Page();page.feed((ROOT/'dist'/route).read_text())
+  assert '/assets/shopify/eleven.css' in page.refs
+  assert '/assets/shopify/eleven.js' in page.refs
+  assert '#updates-footer' in page.refs
+  assert not any(tag=='form' and attrs.get('action','').startswith(('/contact','/cart')) for tag,attrs in page.tags)
+  newsletter_inputs=[attrs for tag,attrs in page.tags if tag=='input' and attrs.get('id','').startswith('Newsletter-footer-')]
+  assert {attrs['name'] for attrs in newsletter_inputs}=={'email','marketing_consent'}
+  assert all('required' in attrs and 'disabled' in attrs for attrs in newsletter_inputs)
+  assert all('disabled' in attrs for tag,attrs in page.tags if 'data-add' in attrs)
+  assert all('data-quick-open' not in attrs for tag,attrs in page.tags)
+ assert 'Disallow: /' in (ROOT/'dist/robots.txt').read_text()
+ print('PASS: shared theme assets, local links, prelaunch controls, newsletter safeguards, and launch guard.')
+ sys.exit(0)
 main=Page();main.feed((ROOT/'dist/index.html').read_text())
 inputs={attrs.get('name'):attrs for tag,attrs in main.tags if tag=='input'}
 assert inputs['email']['type']=='email' and 'required'in inputs['email']
@@ -26,11 +46,6 @@ assert any(tag=='fieldset' and 'disabled'in attrs for tag,attrs in main.tags)
 assert 'noindex' in (ROOT/'dist/index.html').read_text()
 assert not json.loads((ROOT/'src/config.json').read_text())['signupEnabled']
 assert 'Disallow: /'in(ROOT/'dist/robots.txt').read_text()
-with tempfile.TemporaryDirectory() as temp:
- c=json.loads((ROOT/'src/config.json').read_text());c['signupEnabled']=True
- config=Path(temp)/'bad.json';config.write_text(json.dumps(c))
- result=subprocess.run([sys.executable,str(ROOT/'scripts/build.py'),'--config',str(config),'--out',str(Path(temp)/'site')],capture_output=True,text=True)
- assert result.returncode!=0 and 'Launch blocked' in result.stderr
 print('PASS: all local links, anchors, unique IDs, review safeguards, required consent, and launch guard.')
 
 html=(ROOT/'dist/index.html').read_text()
