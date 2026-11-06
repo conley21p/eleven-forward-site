@@ -1,0 +1,10 @@
+{% capture recommendation_cards %}
+{% if product.id == settings.black_tee_product.id or product.id == settings.white_tee_product.id %}
+{% if settings.band_product != blank %}{% render 'product-card', card_product: settings.band_product, fallback_image: 'product-woven-1100.webp' %}{% endif %}
+{% elsif settings.band_product != blank and product.id == settings.band_product.id %}
+{% if settings.black_tee_product != blank %}{% render 'product-card', card_product: settings.black_tee_product, fallback_image: 'club-black-front-cutout-800.webp' %}{% endif %}
+{% if settings.white_tee_product != blank %}{% render 'product-card', card_product: settings.white_tee_product, fallback_image: 'club-white-front-cutout-800.webp' %}{% endif %}
+{% endif %}
+{% endcapture %}
+{% assign recommendation_content = recommendation_cards | strip %}
+{% if recommendation_content != blank %}<section class="shop-shell product-recommendations" aria-labelledby="recommendations-heading"><div class="recommendations-heading"><h2 id="recommendations-heading">You may also like</h2><a href="{{ routes.root_url }}collections/shop">Shop all ↗</a></div><div class="recommendation-row">{{ recommendation_cards }}</div></section>{% endif %}

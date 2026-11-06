@@ -1,0 +1,2 @@
+# Shared comparison runtime
+Build explicit static route trees from one fixture catalog, with a design registry and context helpers for prefixed URLs, assets, cards and local purchase controls. Keep preview services local to browser session storage. Adapt Native source independently; render brand variants through their own modules and scoped CSS. Generate chooser screenshots with local Chrome. Validate generated routes, cart/search behavior and responsive widths before committing.

@@ -14,7 +14,10 @@
     "shopify:doctor": "node scripts/shopify-doctor.cjs",
     "shopify:store:auth": "npm run --silent shopify:cli -- store auth --store wear-eleven-forward-preview.myshopify.com --scopes read_products,read_inventory,read_locations",
     "shopify:store:check": "npm run --silent shopify:cli -- store execute --store wear-eleven-forward-preview.myshopify.com --version 2026-10 --query-file scripts/shopify-store-check.graphql --no-input --json",
-    "build:site": "python3 scripts/build.py && node scripts/build_static_storefront.cjs"
+    "build:site": "python3 scripts/build.py && node scripts/build_static_storefront.cjs",
+    "build:designs": "node scripts/designs.cjs",
+    "preview:designs": "node scripts/designs.cjs --serve",
+    "test:designs": "node --test tests/designs.test.cjs"
   },
   "devDependencies": {
     "@shopify/theme-check-node": "3.31.0",

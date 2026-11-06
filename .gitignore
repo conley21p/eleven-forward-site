@@ -14,3 +14,6 @@ node_modules/
 
 # Generated Shopify bundle, including store-specific settings.
 /shopify-theme/
+
+/dist-designs/
+/node_modules

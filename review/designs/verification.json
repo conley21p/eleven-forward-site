@@ -1,0 +1,105 @@
+[
+  {
+    "id": "native",
+    "width": 320,
+    "overflow": false
+  },
+  {
+    "id": "native",
+    "width": 390,
+    "overflow": false
+  },
+  {
+    "id": "native",
+    "width": 768,
+    "overflow": false
+  },
+  {
+    "id": "native",
+    "width": 1440,
+    "overflow": false
+  },
+  {
+    "id": "on",
+    "width": 320,
+    "overflow": false
+  },
+  {
+    "id": "on",
+    "width": 390,
+    "overflow": false
+  },
+  {
+    "id": "on",
+    "width": 768,
+    "overflow": false
+  },
+  {
+    "id": "on",
+    "width": 1440,
+    "overflow": false
+  },
+  {
+    "id": "lulu",
+    "width": 320,
+    "overflow": false
+  },
+  {
+    "id": "lulu",
+    "width": 390,
+    "overflow": false
+  },
+  {
+    "id": "lulu",
+    "width": 768,
+    "overflow": false
+  },
+  {
+    "id": "lulu",
+    "width": 1440,
+    "overflow": false
+  },
+  {
+    "id": "nike",
+    "width": 320,
+    "overflow": false
+  },
+  {
+    "id": "nike",
+    "width": 390,
+    "overflow": false
+  },
+  {
+    "id": "nike",
+    "width": 768,
+    "overflow": false
+  },
+  {
+    "id": "nike",
+    "width": 1440,
+    "overflow": false
+  },
+  {
+    "id": "vuori",
+    "width": 320,
+    "overflow": false
+  },
+  {
+    "id": "vuori",
+    "width": 390,
+    "overflow": false
+  },
+  {
+    "id": "vuori",
+    "width": 768,
+    "overflow": false
+  },
+  {
+    "id": "vuori",
+    "width": 1440,
+    "overflow": false
+  },
+  {
+    "interactionChecks": "all products, quantity, removal, search match, switch/query retention, back, refresh, reduced motion: passed"
+  }
+]

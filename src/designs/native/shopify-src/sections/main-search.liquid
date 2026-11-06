@@ -1,0 +1,7 @@
+<section class="shop-shell"><h1>Search.</h1><form action="{{ routes.search_url }}" method="get" role="search"><label for="Search">Search products</label><input id="Search" type="search" name="q" value="{{ search.terms | escape }}"><input type="hidden" name="type" value="product"><button class="submit">Search</button></form>{% if search.performed %}{% paginate search.results by 24 %}<div class="shop-grid">{% for item in search.results %}{% if item.object_type == 'product' %}{% render 'product-card', card_product: item %}{% else %}<a href="{{ item.url }}">{{ item.title | escape }}</a>{% endif %}{% else %}<p>No results found.</p>{% endfor %}</div>{{ paginate | default_pagination }}{% endpaginate %}{% endif %}</section>
+{% schema %}
+{
+  "name": "Search",
+  "settings": []
+}
+{% endschema %}

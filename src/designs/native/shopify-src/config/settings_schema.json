@@ -1,0 +1,104 @@
+[
+  {
+    "name": "Shop products and sizing",
+    "settings": [
+      {
+        "type": "product",
+        "id": "band_product",
+        "label": "P001 Sport Band"
+      },
+      {
+        "type": "product",
+        "id": "black_tee_product",
+        "label": "Black Survival Club tee"
+      },
+      {
+        "type": "product",
+        "id": "white_tee_product",
+        "label": "White Survival Club tee"
+      },
+      {
+        "type": "richtext",
+        "id": "mens_size_guide",
+        "label": "Men\u2019s sizing guidance",
+        "default": "<p>Measured size guidance will be added before sales open.</p>"
+      },
+      {
+        "type": "richtext",
+        "id": "womens_size_guide",
+        "label": "Women\u2019s sizing guidance",
+        "default": "<p>Measured size guidance will be added before sales open.</p>"
+      },
+      {
+        "type": "text",
+        "id": "band_men_sm_waist",
+        "label": "P001 Men S/M waist range",
+        "info": "Waist range in inches. Keep the estimate label enabled until validated by band fit testing."
+      },
+      {
+        "type": "text",
+        "id": "band_men_lxl_waist",
+        "label": "P001 Men L/XL waist range",
+        "info": "Waist range in inches. Keep the estimate label enabled until validated by band fit testing."
+      },
+      {
+        "type": "text",
+        "id": "band_women_xss_waist",
+        "label": "P001 Women XS/S waist range",
+        "info": "Waist range in inches. Keep the estimate label enabled until validated by band fit testing."
+      },
+      {
+        "type": "text",
+        "id": "band_women_ml_waist",
+        "label": "P001 Women M/L waist range",
+        "info": "Waist range in inches. Keep the estimate label enabled until validated by band fit testing."
+      },
+      {
+        "type": "text",
+        "id": "band_women_xlxxl_waist",
+        "label": "P001 Women XL/XXL waist range",
+        "info": "Waist range in inches. Keep the estimate label enabled until validated by band fit testing."
+      },
+      {
+        "type": "checkbox",
+        "id": "band_waist_estimates",
+        "label": "P001 waist ranges are estimates",
+        "default": true,
+        "info": "Labels the waist ranges as estimates until the band has been measured and fit tested."
+      }
+    ]
+  },
+  {
+    "name": "Launch controls",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_purchasing",
+        "label": "Show purchasing controls",
+        "default": false,
+        "info": "Enable for test purchases in your test store; review prices and stock before launch."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_newsletter",
+        "label": "Enable Shopify email signup",
+        "default": false,
+        "info": "Show homepage and footer forms only after double opt-in, sender details and approved privacy policy are configured."
+      }
+    ]
+  },
+  {
+    "name": "Customer Account API",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Optional public web client from the Shopify Headless channel. Leave blank until its callback and allowed origin are configured. Never enter a client secret."
+      },
+      {
+        "type": "text",
+        "id": "customer_account_client_id",
+        "label": "Public Customer Account client ID"
+      }
+    ]
+  }
+]

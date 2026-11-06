@@ -1,0 +1,2 @@
+# Warm forest Eleven Forward comparison
+Forest green, warm ivory and soft stone retail with generous editorial compositions. Home: calm P001 campaign; shop collection cards; community mission; black/white Survival Club feature; founder story. Shared commerce, routes, controls and launch gates remain authoritative. Scope styles to data-design=lulu. Existing Eleven Forward imagery and copy, visible concept disclosures, responsive stacking and accessible links. No publication or production merge.

@@ -1,0 +1,2 @@
+# On-inspired Eleven Forward comparison
+White and stone sports retail, generous cutout photography, crisp Inter typography, quiet rules and pill CTAs. Home: split P001 campaign; real catalog cards; mission; Survival Club campaign; founder; mark and newsletter handoff. Shared renderer owns navigation, cart, search, variants, launch gates and all transactional behavior. Scope styles to data-design=on. Existing brand assets and copy only. Preserve concept disclosures. Mobile stacks campaigns and retains two-column product shopping. No publication or production merge.
