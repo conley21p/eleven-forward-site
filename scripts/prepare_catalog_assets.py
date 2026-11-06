@@ -13,7 +13,7 @@ for old in assets.glob('club-*'):
 def export(name,image):
  image=image.convert('RGBA')
  filebase=name+'-cutout'
- widths=sorted(set(min(w,image.width) for w in [480,800,1200]))
+ widths=[480,800] if name.endswith('front-detail') else sorted(set(min(w,image.width) for w in [480,800,1200]))
  for width in widths:
   image.resize((width,round(image.height*width/image.width)),Image.Resampling.LANCZOS).save(assets/f'{filebase}-{width}.webp',quality=86,method=6)
  fallback=image.copy();fallback.thumbnail((1200,1200),Image.Resampling.LANCZOS)
@@ -23,6 +23,7 @@ for color in ['black','white']:
  for view in ['front','back']:
   export(f'club-{color}-{view}',Image.open(masters/f'{color}-{view}.png'))
  export(f'club-{color}-detail',Image.open(masters/f'{color}-back.png').crop((365,200,925,760)))
+export('club-black-front-detail',Image.open(masters/'black-front.png').crop((600,220,920,540)))
 cap=Image.open(masters/'cap-pair.png').resize((1300,560),Image.Resampling.LANCZOS)
 export('club-cap-front',cap.crop((0,30,535,535)))
 export('club-cap-side',cap.crop((535,40,1300,535)))
