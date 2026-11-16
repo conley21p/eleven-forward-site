@@ -1,10 +1,10 @@
 {% assign is_band = false %}{% if product.id == settings.band_product.id %}{% assign is_band = true %}{% endif %}
 {% assign is_tee = false %}{% assign color = 'black' %}
-{% if product.id == settings.black_tee_product.id or product.id == settings.white_tee_product.id %}{% assign is_tee = true %}{% endif %}
-{% if product.id == settings.white_tee_product.id %}{% assign color = 'white' %}{% endif %}
+{% if product.handle == 'survival-club-tee-black' or product.id == settings.black_tee_product.id or product.id == settings.white_tee_product.id or product.handle == 'survival-club-tee-white' %}{% assign is_tee = true %}{% endif %}
+{% if product.id == settings.white_tee_product.id or product.handle == 'survival-club-tee-white' %}{% assign color = 'white' %}{% endif %}
 <section class="shop-product shop-shell{% if is_band %} band-product{% endif %}" data-product-detail>
 {% render 'product-gallery', product: product, is_tee: is_tee, color: color %}
-<div class="shop-product-copy">{% unless is_band %}<p class="eyebrow">Eleven Forward{% if is_tee %} / Unisex{% endif %}</p>{% endunless %}<h1>{{ product.title | escape }}</h1>
+<div class="shop-product-copy">{% unless is_band %}<p class="eyebrow"><span class="brand-name">Eleven Forward</span>{% if is_tee %} / Unisex{% endif %}</p>{% endunless %}<h1>{{ product.title | escape }}</h1>
 {% if is_band %}{% render 'product-picker', picker_product: product, picker_mode: 'detail', picker_color: color, is_tee: is_tee %}{% endif %}<div class="product-description">{% if product.description != blank %}{{ product.description }}{% elsif is_tee %}<p>A shared spirit of resilience and belonging. A unisex Survival Club tee in {{ color }}.</p>{% else %}<p>P001 Sport Band. Designed to help athletes with an ostomy focus on what they love.</p>{% endif %}</div>
 {% if product.metafields.custom.imagery_approved.value != true %}<p class="concept-note">Concept imagery. Final product photography will be confirmed before sales open.</p>{% endif %}
 {% unless is_band %}{% render 'product-picker', picker_product: product, picker_mode: 'detail', picker_color: color, is_tee: is_tee %}{% endunless %}

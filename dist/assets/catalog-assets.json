@@ -57,6 +57,15 @@
       560
     ]
   },
+  "club-black-front-detail": {
+    "filebase": "club-black-front-detail-cutout",
+    "width": 320,
+    "height": 320,
+    "widths": [
+      480,
+      800
+    ]
+  },
   "club-cap-front": {
     "filebase": "club-cap-front-cutout",
     "width": 535,

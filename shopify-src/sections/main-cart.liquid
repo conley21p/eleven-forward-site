@@ -1,6 +1,6 @@
 {% assign all_items_ready = true %}{% for item in cart.items %}{% if item.product.metafields.custom.commerce_ready.value != true %}{% assign all_items_ready = false %}{% endif %}{% endfor %}
 <section class="shop-shell cart-page" data-cart-page>
-<header class="cart-heading"><div><p class="eyebrow">Eleven Forward</p><h1>Your cart.</h1></div></header>
+<header class="cart-heading"><div><p class="eyebrow"><span class="brand-name">Eleven Forward</span></p><h1>Your cart.</h1></div></header>
 {% if cart.empty? %}<div class="cart-empty"><h2>A little room for what’s next.</h2><p>Your cart is empty.</p><a class="submit" href="{{ routes.root_url }}collections/shop">Explore the shop <span aria-hidden="true">→</span></a></div>
 {% else %}<form data-cart-form class="cart-layout" action="{{ routes.cart_url }}" method="post">
 <div class="cart-items"><div class="cart-column-headings" aria-hidden="true"><span>Product</span><span>Total</span></div>

@@ -267,3 +267,5 @@
 .catalog-controls-flow>.catalog-bottom{margin:0 var(--pad);padding:24px 0 32px}
 @media(max-width:640px){.catalog-controls-flow .catalog-animation-track{height:calc(100svh - var(--catalog-header,71px) + 180svh)}}
 @media(max-width:740px){.catalog-scroll-cue{right:auto;left:8px}}
+
+.brand-name { display: inline-block; font-style: normal; transform: skewX(-11deg); }
