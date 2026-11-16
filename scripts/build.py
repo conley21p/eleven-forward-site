@@ -48,6 +48,11 @@ def document(title,desc,body,path='/',noindex=False):
  index='noindex, nofollow' if noindex or not active else 'index, follow'
  return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{e(title)}</title><meta name="description" content="{e(desc)}"><meta name="robots" content="{index}"><meta name="theme-color" content="#F5F5F0"><link rel="canonical" href="{e(url+path)}"><meta property="og:type" content="website"><meta property="og:site_name" content="Eleven Forward"><meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{e(url+path)}"><meta property="og:image" content="{e(url)}/assets/social-p001-woven.jpg"><meta property="og:image:alt" content="Eleven Forward P001 sport band concept"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="preload" href="/assets/fonts/Inter-Regular.ttf" as="font" type="font/ttf" crossorigin><link rel="stylesheet" href="/assets/{asset_names['styles.css']}"><script type="module" src="/assets/{asset_names['app.js']}"></script></head><body>{header()}{body}{footer()}</body></html>'''
 def write(path,content):
+ def version_brand_asset(match):
+  contents=(ROOT/'dist/assets'/match[1]).read_bytes()
+  version=hashlib.sha256(contents).hexdigest()[:12]
+  return f'{match[0]}?v={version}'
+ content=re.sub(r'/assets/(favicon\.svg|logo-(?:dark|light)\.png|social-p001-woven\.jpg)\b',version_brand_asset,content)
  target=out/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(content)
 def picture(name,widths,width,height,alt,eager=False):
  return f'''<picture><source type="image/webp" srcset="{', '.join(f'/assets/{name}-{w}.webp {min(w,width)}w' for w in widths)}" sizes="{'(max-width: 640px) 100vw, 82vw' if name=='product-woven' else '100vw' if name in ['shirt','shirt-white','hat'] else '(max-width: 640px) 191px, 280px'}"><img src="/assets/{name}.jpg" width="{width}" height="{height}" alt="{e(alt)}" {'fetchpriority="high"' if eager else 'loading="lazy"'} decoding="async"></picture>'''
