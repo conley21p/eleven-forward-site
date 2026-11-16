@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const {createHash} = require('node:crypto');
 const {JSDOM} = require('jsdom');
 const {render, products} = require('../tests/shopify-preview.cjs');
 
@@ -44,10 +45,19 @@ async function build() {
  const assetFolder = path.join(output, 'assets/shopify');
  fs.mkdirSync(assetFolder, {recursive:true});
  fs.cpSync(path.join(root, 'shopify-src/assets'), assetFolder, {recursive:true});
+ const versions = new Map();
+ const brandedAssets = /\/assets\/shopify\/(eleven\.css|favicon\.svg|logo-(?:dark|light)\.png|(?:club-(?:black|white)-[\w-]+|product-woven[\w-]*)\.(?:png|webp|jpg))\b/g;
+ function versionAsset(url, file) {
+  if (!versions.has(file)) {
+   const contents = fs.readFileSync(path.join(assetFolder, file));
+   versions.set(file, createHash('sha256').update(contents).digest('hex').slice(0, 12));
+  }
+  return url + '?v=' + versions.get(file);
+ }
  for (const [route, title] of pages) {
   const publicPath = publicPaths.get(route);
   const html = await render(new URL(route, config.siteUrl), {staticOrigin:config.siteUrl});
-  const dom = new JSDOM(html.replaceAll('/assets/', '/assets/shopify/'));
+  const dom = new JSDOM(html.replaceAll('/assets/', '/assets/shopify/').replace(brandedAssets, versionAsset));
   const {document} = dom.window;
   document.title = title;
   document.querySelector('[rel="canonical"]').href = new URL(publicPath, config.siteUrl).href;
