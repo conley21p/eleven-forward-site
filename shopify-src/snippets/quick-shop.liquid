@@ -9,7 +9,7 @@
 {% endif %}
 {% if quick_ready and quick_product.available %}
 <dialog class="quick-dialog" id="QuickShop-{{ quick_uid }}" aria-labelledby="QuickTitle-{{ quick_uid }}">
-<div class="quick-dialog-header"><p class="eyebrow">Eleven Forward / Quick shop</p><button type="button" class="quick-close button-secondary" data-quick-close aria-label="Close quick shop">×</button></div>
+<div class="quick-dialog-header"><p class="eyebrow"><span class="brand-name">Eleven Forward</span> / Quick shop</p><button type="button" class="quick-close button-secondary" data-quick-close aria-label="Close quick shop">×</button></div>
 <div class="quick-dialog-layout" data-product-detail>
 {% render 'product-gallery', product: quick_product, is_tee: quick_tee, color: quick_color %}
 <div class="quick-dialog-copy"><h2 id="QuickTitle-{{ quick_uid }}">{{ quick_product.title | escape }}</h2>{% if quick_tee %}<p class="quick-fit-note">{{ quick_color | capitalize }} · Unisex</p>{% endif %}
